@@ -4,14 +4,38 @@
 	import { Menu, X } from '@lucide/svelte';
 
 	let mobileMenuOpen = $state(false);
+	let activeSection = $state('');
 
 	const navLinks = [
+		{ label: 'About', href: '#about' },
 		{ label: 'Products', href: '#products' },
 		{ label: 'How It Works', href: '#how-it-works' },
 		{ label: 'Pricing', href: '#pricing' },
-		{ label: 'About', href: '#about' },
 		{ label: 'Blog', href: '/blog' }
 	];
+
+	const sectionIds = navLinks.map((l) => l.href.slice(1)).filter((id) => !id.startsWith('/'));
+
+	$effect(() => {
+		const observers: IntersectionObserver[] = [];
+
+		for (const id of sectionIds) {
+			const el = document.getElementById(id);
+			if (!el) continue;
+
+			const obs = new IntersectionObserver(
+				([entry]) => {
+					if (entry.isIntersecting) activeSection = id;
+				},
+				{ rootMargin: '-30% 0px -60% 0px', threshold: 0 }
+			);
+
+			obs.observe(el);
+			observers.push(obs);
+		}
+
+		return () => observers.forEach((o) => o.disconnect());
+	});
 </script>
 
 <nav class="fixed top-0 z-50 w-full border-b border-white/10 bg-surface-dark-alpha backdrop-blur-xl">
@@ -24,11 +48,17 @@
 		<!-- Desktop Nav -->
 		<div class="hidden items-center gap-10 md:flex">
 			{#each navLinks as link (link.label)}
+				{@const isActive = activeSection === link.href.slice(1)}
 				<a
 					href={link.href}
-					class="text-sm font-medium tracking-wide text-white/70 transition-colors hover:text-white"
+					class="relative text-sm font-medium tracking-wide transition-colors {isActive
+						? 'text-white'
+						: 'text-white/70 hover:text-white'}"
 				>
 					{link.label}
+					{#if isActive}
+						<span class="absolute -bottom-1 left-0 h-px w-full bg-accent"></span>
+					{/if}
 				</a>
 			{/each}
 		</div>
@@ -62,9 +92,12 @@
 		<div class="border-t border-white/10 bg-surface-dark px-6 py-6 md:hidden">
 			<div class="flex flex-col gap-4">
 				{#each navLinks as link (link.label)}
+					{@const isActive = activeSection === link.href.slice(1)}
 					<a
 						href={link.href}
-						class="text-base font-medium text-white/70 transition-colors hover:text-white"
+						class="text-base font-medium transition-colors {isActive
+							? 'text-white underline decoration-accent underline-offset-4'
+							: 'text-white/70 hover:text-white'}"
 						onclick={() => (mobileMenuOpen = false)}
 					>
 						{link.label}
