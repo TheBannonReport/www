@@ -14,7 +14,7 @@
 	];
 </script>
 
-<nav class="fixed top-0 z-50 w-full border-b border-white/10 bg-[oklch(0.14_0.03_260/0.9)] backdrop-blur-xl">
+<nav class="fixed top-0 z-50 w-full border-b border-white/10 bg-surface-dark-alpha backdrop-blur-xl">
 	<div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
 		<!-- Logo -->
 		<a href="/" class="flex items-center gap-2">
@@ -23,7 +23,7 @@
 
 		<!-- Desktop Nav -->
 		<div class="hidden items-center gap-10 md:flex">
-			{#each navLinks as link}
+			{#each navLinks as link (link.label)}
 				<a
 					href={link.href}
 					class="text-sm font-medium tracking-wide text-white/70 transition-colors hover:text-white"
@@ -35,9 +35,9 @@
 
 		<!-- Desktop CTA -->
 		<div class="hidden items-center gap-3 md:flex">
-			<Button variant="ghost" class="text-white/70 hover:text-white hover:bg-white/10">
+			<!-- <Button variant="ghost" class="text-white/70 hover:text-white hover:bg-white/10">
 				Sign In
-			</Button>
+			</Button> -->
 			<Button class="bg-accent text-white hover:bg-accent/90">
 				Get Started
 			</Button>
@@ -59,9 +59,9 @@
 
 	<!-- Mobile Menu -->
 	{#if mobileMenuOpen}
-		<div class="border-t border-white/10 bg-[oklch(0.14_0.03_260)] px-6 py-6 md:hidden">
+		<div class="border-t border-white/10 bg-surface-dark px-6 py-6 md:hidden">
 			<div class="flex flex-col gap-4">
-				{#each navLinks as link}
+				{#each navLinks as link (link.label)}
 					<a
 						href={link.href}
 						class="text-base font-medium text-white/70 transition-colors hover:text-white"

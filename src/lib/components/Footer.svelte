@@ -24,7 +24,7 @@
 	];
 </script>
 
-<footer class="bg-[oklch(0.12_0.03_260)] text-white">
+<footer class="bg-surface-darker text-white">
 	<div class="mx-auto max-w-7xl px-6 pb-10 pt-20">
 		<!-- Top section -->
 		<div class="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
@@ -42,7 +42,7 @@
 			<div>
 				<h4 class="mb-4 text-xs font-semibold uppercase tracking-widest text-white/40">Products</h4>
 				<ul class="space-y-3">
-					{#each productLinks as link}
+					{#each productLinks as link (link.label)}
 						<li>
 							<a href={link.href} class="text-sm text-white/60 transition-colors hover:text-white">
 								{link.label}
@@ -56,7 +56,7 @@
 			<div>
 				<h4 class="mb-4 text-xs font-semibold uppercase tracking-widest text-white/40">Company</h4>
 				<ul class="space-y-3">
-					{#each companyLinks as link}
+					{#each companyLinks as link (link.label)}
 						<li>
 							<a href={link.href} class="text-sm text-white/60 transition-colors hover:text-white">
 								{link.label}
@@ -70,7 +70,7 @@
 			<div>
 				<h4 class="mb-4 text-xs font-semibold uppercase tracking-widest text-white/40">Connect</h4>
 				<ul class="space-y-3">
-					{#each socialLinks as link}
+					{#each socialLinks as link (link.label)}
 						<li>
 							<a href={link.href} class="text-sm text-white/60 transition-colors hover:text-white">
 								{link.label}

@@ -2,6 +2,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Separator } from '$lib/components/ui/separator';
+	import semiTruck from '$lib/assets/semi-truck.png';
 	import {
 		Shield,
 		Search,
@@ -148,36 +149,70 @@
 		{ value: '20-Point', label: 'Risk Assessment' },
 		{ value: '2x Daily', label: 'Monitoring Alerts' }
 	];
+
+	const bannerStats = [
+		{ value: '30K+', label: 'Flagged Entities' },
+		{ value: '100+', label: 'Data Sources' },
+		{ value: '50K+', label: 'Dirty Data Points' },
+		{ value: '24/7', label: 'Monitoring' }
+	];
 </script>
 
+{#snippet sectionHeader(label: string, title: string, description: string, variant: 'light' | 'dark')}
+	<div class="mx-auto max-w-2xl text-center">
+		<p class="text-xs font-semibold uppercase tracking-widest {variant === 'dark' ? 'text-accent-light' : 'text-accent'}">
+			{label}
+		</p>
+		<h2 class="mt-4 text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl {variant === 'dark' ? 'text-white' : 'text-foreground'}">
+			{title}
+		</h2>
+		<p class="mt-6 text-lg leading-relaxed {variant === 'dark' ? 'text-white/50' : 'text-muted-foreground'}">
+			{description}
+		</p>
+	</div>
+{/snippet}
+
+{#snippet statItem(value: string, label: string, size: 'sm' | 'lg')}
+	<div class="text-center">
+		{#if size === 'sm'}
+			<div class="text-xl font-bold text-white">{value}</div>
+			<div class="mt-1 text-xs text-white/40">{label}</div>
+		{:else}
+			<div class="text-3xl font-bold text-white sm:text-4xl lg:text-5xl">{value}</div>
+			<div class="mt-2 text-sm text-white/40">{label}</div>
+		{/if}
+	</div>
+{/snippet}
+
 <!-- ==================== HERO ==================== -->
-<section class="relative flex min-h-dvh items-center overflow-hidden bg-[oklch(0.14_0.03_260)]">
+<section class="relative flex min-h-dvh items-center overflow-hidden bg-surface-dark">
+	<!-- Background truck image -->
+	<img
+		src={semiTruck}
+		alt="Magnificent Semi Truck"
+		aria-hidden="true"
+		class="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-[0.1]"
+	/>
+
 	<!-- Subtle gradient orbs -->
 	<div
-		class="pointer-events-none absolute -left-40 -top-40 h-150 w-150 rounded-full bg-[oklch(0.35_0.15_250/0.15)] blur-[120px]"
+		class="pointer-events-none absolute -left-40 -top-40 h-150 w-150 rounded-full bg-glow-1 blur-[120px]"
 	></div>
 	<div
-		class="pointer-events-none absolute -bottom-40 -right-40 h-125 w-125 rounded-full bg-[oklch(0.40_0.12_280/0.1)] blur-[120px]"
+		class="pointer-events-none absolute -bottom-40 -right-40 h-125 w-125 rounded-full bg-glow-2 blur-[120px]"
 	></div>
 
-	<div class="relative mx-auto w-full min-w-0 max-w-7xl px-6 py-32 pt-40">
+	<div class="relative mx-auto w-full min-w-0 max-w-7xl px-6 py-32 pt-24 sm:pt-32">
 		<div class="mx-auto max-w-4xl text-center">
-			<Badge
-				variant="outline"
-				class="mb-8 inline-flex flex-wrap border-white/20 bg-white/5 px-4 py-1.5 text-xs font-medium uppercase tracking-widest text-white/60"
-			>
-				Trusted by freight professionals nationwide
-			</Badge>
-
 			<h1
-				class="text-4xl font-bold leading-[1.08] tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl"
+				class="text-4xl font-black leading-[1.08] tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl"
 			>
 				The Freight Industry's
 				<br />
-				<span class="text-[oklch(0.65_0.18_250)]">Report Card</span>
+				<span class="text-accent-light">Report Card</span>
 			</h1>
 
-			<p class="mx-auto mt-8 max-w-2xl text-lg leading-relaxed text-white/50 sm:text-xl">
+			<p class="mx-auto mt-8 max-w-2xl text-md leading-relaxed text-white/50 sm:text-xl">
 				It only takes one bad broker or carrier to put your business at risk. We tap 100+ data
 				points and 30,000+ flagged entities to spot the red flags before they cost you millions.
 			</p>
@@ -185,72 +220,51 @@
 			<!-- MC Lookup Search Bar -->
 			<form
 				onsubmit={handleLookup}
-				class="mx-auto mt-12 flex max-w-xl flex-col gap-3 sm:flex-row sm:gap-0 sm:rounded-full sm:border sm:border-white/15 sm:bg-white/5 sm:p-1.5 sm:backdrop-blur-sm sm:transition-colors sm:focus-within:border-white/30"
+				class="mx-auto my-8 flex max-w-md items-center rounded-full border border-white/15 bg-white/5 p-1.5 backdrop-blur-sm transition-colors focus-within:border-white/30 sm:my-16 sm:mb-20"
 			>
-				<div class="flex flex-1 items-center gap-3 rounded-full border border-white/15 bg-white/5 px-4 py-3 backdrop-blur-sm sm:border-0 sm:bg-transparent sm:py-0 sm:pl-5 sm:pr-0">
+				<div class="flex flex-1 items-center gap-2 pl-4">
 					<Search class="h-5 w-5 shrink-0 text-white/40" />
 					<input
 						type="text"
 						bind:value={mcNumber}
-						placeholder="Enter MC# to look up"
+						placeholder="Enter MC#"
 						class="w-full border-none bg-transparent text-sm text-white placeholder:text-white/35 focus:outline-none focus:ring-0"
 					/>
 				</div>
 				<Button
 					type="submit"
-					class="h-11 w-full rounded-full bg-accent px-6 text-sm font-semibold text-white hover:bg-accent/90 sm:w-auto"
+					class="h-10 shrink-0 rounded-full bg-accent px-5 text-sm font-semibold text-white hover:bg-accent/90"
 				>
 					Lookup
 					<ArrowRight class="ml-1.5 h-4 w-4" />
 				</Button>
 			</form>
 
-		<div class="mx-auto mt-6 flex w-full flex-col items-center justify-center gap-4 sm:flex-row">
-				<Button
-					size="lg"
-					class="h-13 w-full bg-accent px-8 text-base font-semibold text-white hover:bg-accent/90 sm:w-auto"
-				>
-					Get Your Report
-					<ArrowRight class="ml-2 h-4 w-4" />
-				</Button>
-				<Button
-					variant="outline"
-					size="lg"
-					class="h-13 w-full border-white/20 bg-transparent px-8 text-base font-semibold text-white hover:bg-white/10 sm:w-auto"
-				>
-					See How It Works
-				</Button>
-			</div>
-		</div>
-
-		<!-- Floating stat pills -->
-		<div class="mx-auto mt-24 grid w-full min-w-0 max-w-3xl grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
-			{#each stats as stat}
-				<div class="rounded-xl border border-white/10 bg-white/5 px-4 py-5 text-center backdrop-blur-sm">
-					<div class="text-xl font-bold text-white">{stat.value}</div>
-					<div class="mt-1 text-xs text-white/40">{stat.label}</div>
-				</div>
-			{/each}
-		</div>
+		
+            <!-- Floating stat pills -->
+            <div class="mx-auto grid w-full min-w-0 max-w-3xl grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
+                {#each stats as stat (stat.label)}
+                    <div class="rounded-xl border border-white/10 bg-white/5 px-4 py-5 backdrop-blur-sm">
+                        {@render statItem(stat.value, stat.label, 'sm')}
+                    </div>
+                {/each}
+            </div>
+        </div>
 	</div>
 </section>
 
 <!-- ==================== WHY CHOOSE US ==================== -->
 <section id="about" class="bg-background py-32">
 	<div class="mx-auto max-w-7xl px-6">
-		<div class="mx-auto max-w-2xl text-center">
-			<p class="text-xs font-semibold uppercase tracking-widest text-accent">Why Choose Us</p>
-			<h2 class="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
-				Intelligence that protects your bottom line
-			</h2>
-			<p class="mt-6 text-lg leading-relaxed text-muted-foreground">
-				Our predictive scoring system ranks risk, giving you the intelligence to make informed
-				decisions before they become costly problems.
-			</p>
-		</div>
+		{@render sectionHeader(
+			'Why Choose Us',
+			'Intelligence that protects your bottom line',
+			'Our predictive scoring system ranks risk, giving you the intelligence to make informed decisions before they become costly problems.',
+			'light'
+		)}
 
 		<div class="mt-20 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-			{#each features as feature}
+			{#each features as feature (feature.title)}
 				<div
 					class="group rounded-2xl border border-border bg-card p-8 transition-all duration-300 hover:border-accent/30 hover:shadow-lg"
 				>
@@ -268,23 +282,17 @@
 </section>
 
 <!-- ==================== CORE SERVICES ==================== -->
-<section id="products" class="bg-[oklch(0.14_0.03_260)] py-32">
+<section id="products" class="bg-surface-dark py-32">
 	<div class="mx-auto max-w-7xl px-6">
-		<div class="mx-auto max-w-2xl text-center">
-			<p class="text-xs font-semibold uppercase tracking-widest text-[oklch(0.65_0.18_250)]">
-				Core Services
-			</p>
-			<h2 class="mt-4 text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl">
-				Protection at every level
-			</h2>
-			<p class="mt-6 text-lg leading-relaxed text-white/50">
-				Choose the forensics tool that fits your needs — from broker-only vetting to full
-				carrier and broker protection.
-			</p>
-		</div>
+		{@render sectionHeader(
+			'Core Services',
+			'Protection at every level',
+			'Choose the forensics tool that fits your needs — from broker-only vetting to full carrier and broker protection.',
+			'dark'
+		)}
 
 		<div class="mt-20 grid gap-8 lg:grid-cols-3">
-			{#each services as service}
+			{#each services as service (service.title)}
 				<div
 					class="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur-sm transition-all duration-300 hover:border-white/20 hover:bg-white/[0.07] sm:p-10"
 				>
@@ -295,7 +303,7 @@
 						{service.tag}
 					</Badge>
 					<div
-						class="flex h-14 w-14 items-center justify-center rounded-xl bg-[oklch(0.55_0.18_250/0.15)] text-[oklch(0.65_0.18_250)]"
+						class="flex h-14 w-14 items-center justify-center rounded-xl bg-accent-surface text-accent-light"
 					>
 						<service.icon class="h-7 w-7" />
 					</div>
@@ -303,7 +311,7 @@
 					<p class="mt-4 text-sm leading-relaxed text-white/50">{service.description}</p>
 					<a
 						href="#pricing"
-						class="mt-8 inline-flex items-center gap-2 text-sm font-medium text-[oklch(0.65_0.18_250)] transition-colors hover:text-[oklch(0.75_0.18_250)]"
+						class="mt-8 inline-flex items-center gap-2 text-sm font-medium text-accent-light transition-colors hover:text-accent-lighter"
 					>
 						Learn more
 						<ChevronRight class="h-4 w-4" />
@@ -317,18 +325,15 @@
 <!-- ==================== HOW IT WORKS ==================== -->
 <section id="how-it-works" class="bg-background py-32">
 	<div class="mx-auto max-w-7xl px-6">
-		<div class="mx-auto max-w-2xl text-center">
-			<p class="text-xs font-semibold uppercase tracking-widest text-accent">How It Works</p>
-			<h2 class="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
-				From data to decision in seconds
-			</h2>
-			<p class="mt-6 text-lg leading-relaxed text-muted-foreground">
-				Four rigorous steps stand between you and a bad partnership.
-			</p>
-		</div>
+		{@render sectionHeader(
+			'How It Works',
+			'From data to decision in seconds',
+			'Four rigorous steps stand between you and a bad partnership.',
+			'light'
+		)}
 
 		<div class="mt-20 grid gap-10 lg:grid-cols-4">
-			{#each steps as step, i}
+			{#each steps as step, i (step.number)}
 				<div class="relative">
 					<!-- Connector line (hidden on last item and mobile) -->
 					{#if i < steps.length - 1}
@@ -371,9 +376,9 @@
 </section>
 
 <!-- ==================== STATS BANNER ==================== -->
-<section class="relative overflow-hidden bg-[oklch(0.14_0.03_260)] py-24">
+<section class="relative overflow-hidden bg-surface-dark py-24">
 	<div
-		class="pointer-events-none absolute inset-0 bg-linear-to-r from-[oklch(0.35_0.15_250/0.1)] via-transparent to-[oklch(0.40_0.12_280/0.1)]"
+		class="pointer-events-none absolute inset-0 bg-linear-to-r from-glow-1 via-transparent to-glow-2"
 	></div>
 	<div class="relative mx-auto max-w-7xl px-6">
 		<div class="mx-auto max-w-2xl text-center">
@@ -385,22 +390,9 @@
 			</p>
 		</div>
 		<div class="mx-auto mt-16 grid max-w-4xl grid-cols-2 gap-4 sm:grid-cols-4 sm:gap-8">
-			<div class="text-center">
-				<div class="text-3xl font-bold text-white sm:text-4xl lg:text-5xl">30K+</div>
-				<div class="mt-2 text-sm text-white/40">Flagged Entities</div>
-			</div>
-			<div class="text-center">
-				<div class="text-3xl font-bold text-white sm:text-4xl lg:text-5xl">100+</div>
-				<div class="mt-2 text-sm text-white/40">Data Sources</div>
-			</div>
-			<div class="text-center">
-				<div class="text-3xl font-bold text-white sm:text-4xl lg:text-5xl">50K+</div>
-				<div class="mt-2 text-sm text-white/40">Dirty Data Points</div>
-			</div>
-			<div class="text-center">
-				<div class="text-3xl font-bold text-white sm:text-4xl lg:text-5xl">24/7</div>
-				<div class="mt-2 text-sm text-white/40">Monitoring</div>
-			</div>
+			{#each bannerStats as stat (stat.label)}
+				{@render statItem(stat.value, stat.label, 'lg')}
+			{/each}
 		</div>
 	</div>
 </section>
@@ -408,18 +400,15 @@
 <!-- ==================== PRICING ==================== -->
 <section id="pricing" class="bg-background py-32">
 	<div class="mx-auto max-w-7xl px-6">
-		<div class="mx-auto max-w-2xl text-center">
-			<p class="text-xs font-semibold uppercase tracking-widest text-accent">Pricing</p>
-			<h2 class="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl lg:text-5xl">
-				Plans that scale with you
-			</h2>
-			<p class="mt-6 text-lg leading-relaxed text-muted-foreground">
-				Start protecting your business today. All plans include unlimited lookups.
-			</p>
-		</div>
+		{@render sectionHeader(
+			'Pricing',
+			'Plans that scale with you',
+			'Start protecting your business today. All plans include unlimited lookups.',
+			'light'
+		)}
 
 		<div class="mx-auto mt-20 grid max-w-5xl gap-8 lg:grid-cols-3">
-			{#each plans as plan}
+			{#each plans as plan (plan.name)}
 				<div
 					class="relative flex flex-col rounded-2xl border p-6 transition-all duration-300 sm:p-10 {plan.popular
 						? 'border-accent bg-accent/5 shadow-xl shadow-accent/5'
@@ -438,7 +427,7 @@
 					</div>
 					<Separator class="my-8" />
 					<ul class="flex-1 space-y-4">
-						{#each plan.features as feat}
+						{#each plan.features as feat (feat)}
 							<li class="flex items-center gap-3 text-sm text-muted-foreground">
 								<Check class="h-4 w-4 shrink-0 text-accent" />
 								{feat}
@@ -463,9 +452,9 @@
 </section>
 
 <!-- ==================== FINAL CTA ==================== -->
-<section class="relative overflow-hidden bg-[oklch(0.14_0.03_260)] py-32">
+<section class="relative overflow-hidden bg-surface-dark py-32">
 	<div
-		class="pointer-events-none absolute -right-20 -top-20 h-100 w-100 rounded-full bg-[oklch(0.35_0.15_250/0.15)] blur-[100px]"
+		class="pointer-events-none absolute -right-20 -top-20 h-100 w-100 rounded-full bg-glow-1 blur-[100px]"
 	></div>
 	<div class="relative mx-auto max-w-3xl px-6 text-center">
 		<h2 class="text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl">
