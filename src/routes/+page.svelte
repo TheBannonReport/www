@@ -3,6 +3,10 @@
 	import { Badge } from '$lib/components/ui/badge';
 	import { Separator } from '$lib/components/ui/separator';
 	import semiTruck from '$lib/assets/semi-truck.png';
+	import screenshot1 from '$lib/assets/img/Screenshot-1.png';
+	import screenshot2 from '$lib/assets/img/Screenshot-2.png';
+	import screenshot3 from '$lib/assets/img/Screenshot-3.png';
+	import screenshot4 from '$lib/assets/img/Screenshot-4.png';
 	import {
 		Shield,
 		Search,
@@ -21,6 +25,26 @@
 	} from '@lucide/svelte';
 
 	let mcNumber = $state('');
+	let demoOpen = $state(false);
+	let demoSlide = $state(0);
+
+	const demoSlides = [
+		{ img: screenshot1, step: '01', title: 'Data Extraction', comment: 'Paste any MC# or DOT number into the search bar and get instant results — no forms, no waiting.' },
+		{ img: screenshot2, step: '02', title: '20-Point Risk Assessment', comment: 'Our 20-point risk scorecard surfaces hidden liabilities at a glance, so your team spends time on decisions, not digging.' },
+		{ img: screenshot3, step: '03', title: 'Advanced Fraud Detection', comment: 'Red flags are automatically cross-referenced against our fraud database and highlighted with plain-language explanations.' },
+		{ img: screenshot4, step: '04', title: 'Clear Results', comment: 'A single color-coded score tells you whether to proceed, proceed with caution, or walk away — in under 10 seconds.' }
+	];
+
+	function openDemo(index = 0) { demoSlide = index; demoOpen = true; }
+	function closeDemo() { demoOpen = false; }
+	function prevSlide() { demoSlide = (demoSlide - 1 + demoSlides.length) % demoSlides.length; }
+	function nextSlide() { demoSlide = (demoSlide + 1) % demoSlides.length; }
+
+	function handleModalKeydown(e: KeyboardEvent) {
+		if (e.key === 'Escape') closeDemo();
+		if (e.key === 'ArrowLeft') prevSlide();
+		if (e.key === 'ArrowRight') nextSlide();
+	}
 
 	function handleLookup(e: SubmitEvent) {
 		e.preventDefault();
@@ -115,33 +139,49 @@
 		{
 			name: 'Carrier Forensics',
 			description: 'Carrier vetting only',
-			price: '$80',
-			period: '/mo',
+			monthly: { price: '$80', href: 'https://app.thebannonreport.com/login?plan=core_carrier_tool&annual=false' },
+			annual: { price: '$64', href: 'https://app.thebannonreport.com/login?plan=core_carrier_tool&annual=true' },
 			features: ['Unlimited lookups', 'Carrier vetting', 'Insurance monitoring', 'Authority history'],
+			popular: false
+		},
+		{
+			name: 'Broker Forensics',
+			description: 'Broker vetting only',
+			monthly: { price: '$80', href: 'https://app.thebannonreport.com/login?plan=core_broker_tool&annual=false' },
+			annual: { price: '$64', href: 'https://app.thebannonreport.com/login?plan=core_broker_tool&annual=true' },
+			features: ['Unlimited lookups', 'Broker vetting', 'Insurance monitoring', 'Authority history'],
 			popular: false
 		},
 		{
 			name: 'Combo Forensics',
 			description: 'Carrier + broker vetting',
-			price: '$125',
-			period: '/mo',
-			features: [
-				'Unlimited lookups',
-				'Carrier + broker vetting',
-				'Insurance monitoring',
-				'Authority history'
-			],
+			monthly: { price: '$125', href: 'https://app.thebannonreport.com/login?plan=core_combo_tool&annual=false' },
+			annual: { price: '$100', href: 'https://app.thebannonreport.com/login?plan=core_combo_tool&annual=true' },
+			features: ['Unlimited lookups', 'Carrier + broker vetting', 'Insurance monitoring', 'Authority history'],
 			popular: true
-		},
-		{
-			name: 'Team 5',
-			description: 'Full vetting · 5 seats',
-			price: '$150',
-			period: '/mo',
-			features: ['Everything in Combo', '5 team members', 'Shared organization'],
-			popular: false
 		}
 	];
+
+	const teamPlans = [
+		{
+			name: 'Team 5',
+			seats: '5 seats',
+			description: 'Full vetting · 5 seats',
+			monthly: { price: '$150', href: 'https://app.thebannonreport.com/login?plan=enterprise_5&annual=false' },
+			annual: { price: '$120', href: 'https://app.thebannonreport.com/login?plan=enterprise_5&annual=true' },
+			features: ['Everything in Combo', '5 team members', 'Shared organization']
+		},
+		{
+			name: 'Team 25',
+			seats: '25 seats',
+			description: 'Full vetting · 25 seats',
+			monthly: { price: '$350', href: 'https://app.thebannonreport.com/login?plan=enterprise_25&annual=false' },
+			annual: { price: '$280', href: 'https://app.thebannonreport.com/login?plan=enterprise_25&annual=true' },
+			features: ['Everything in Combo', '25 team members', 'Shared organization']
+		}
+	];
+
+	let isAnnual = $state(false);
 
 	const stats = [
 		{ value: '30,000+', label: 'Flagged Entities' },
@@ -156,13 +196,19 @@
 		{ value: '50K+', label: 'Dirty Data Points' },
 		{ value: '24/7', label: 'Monitoring' }
 	];
+
 </script>
 
 {#snippet sectionHeader(label: string, title: string, description: string, variant: 'light' | 'dark')}
 	<div class="mx-auto max-w-2xl text-center">
-		<p class="text-xs font-semibold uppercase tracking-widest {variant === 'dark' ? 'text-accent-light' : 'text-accent'}">
-			{label}
-		</p>
+		
+			<div class="flex items-center justify-center gap-4">
+				<span class="h-px flex-1 max-w-12 {variant === 'dark' ? 'bg-accent-light/30' : 'bg-accent/30'}"></span>
+				<p class="text-xs font-semibold uppercase tracking-widest {variant === 'dark' ? 'text-accent-light' : 'text-accent'}">
+					{label}
+				</p>
+				<span class="h-px flex-1 max-w-12 {variant === 'dark' ? 'bg-accent-light/30' : 'bg-accent/30'}"></span>
+			</div>
 		<h2 class="mt-4 text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl {variant === 'dark' ? 'text-white' : 'text-foreground'}">
 			{title}
 		</h2>
@@ -178,7 +224,7 @@
 			<div class="text-xl font-bold text-white">{value}</div>
 			<div class="mt-1 text-xs text-white/40">{label}</div>
 		{:else}
-			<div class="text-3xl font-bold text-white sm:text-4xl lg:text-5xl">{value}</div>
+			<div class="text-3xl font-bold text-accent-light sm:text-4xl lg:text-5xl">{value}</div>
 			<div class="mt-2 text-sm text-white/40">{label}</div>
 		{/if}
 	</div>
@@ -335,45 +381,115 @@
 		<div class="mt-20 grid gap-10 lg:grid-cols-4">
 			{#each steps as step, i (step.number)}
 				<div class="relative">
-					<!-- Connector line (hidden on last item and mobile) -->
 					{#if i < steps.length - 1}
-						<div
-							class="absolute right-0 top-10 hidden h-px w-[calc(100%-3rem)] translate-x-[calc(50%+1.5rem)] bg-border lg:block"
-						></div>
+						<div class="absolute right-0 top-10 hidden h-px w-[calc(100%-3rem)] translate-x-[calc(50%+1.5rem)] bg-border lg:block"></div>
 					{/if}
-
-					<div class="flex flex-col items-center text-center lg:items-start lg:text-left">
-						<div
-							class="relative flex h-20 w-20 items-center justify-center rounded-2xl border border-border bg-card"
-						>
+					<button
+						type="button"
+						class="group flex w-full flex-col items-center text-center lg:items-start lg:text-left"
+						onclick={() => openDemo(i)}
+					>
+						<div class="relative flex h-20 w-20 items-center justify-center rounded-2xl border border-border bg-card transition-all duration-300 group-hover:border-accent/40 group-hover:bg-accent/5">
 							<step.icon class="h-8 w-8 text-accent" />
-							<span
-								class="absolute -right-2 -top-2 flex h-7 w-7 items-center justify-center rounded-full bg-accent text-xs font-bold text-white"
-							>
+							<span class="absolute -right-2 -top-2 flex h-7 w-7 items-center justify-center rounded-full bg-accent text-xs font-bold text-white">
 								{step.number}
 							</span>
 						</div>
 						<h3 class="mt-6 text-lg font-semibold text-foreground">{step.title}</h3>
-						<p class="mt-3 max-w-xs text-sm leading-relaxed text-muted-foreground">
-							{step.description}
-						</p>
-					</div>
+						<p class="mt-3 max-w-xs text-sm leading-relaxed text-muted-foreground">{step.description}</p>
+					</button>
 				</div>
 			{/each}
 		</div>
 
 		<div class="mt-16 text-center">
 			<Button
-				variant="outline"
 				size="lg"
-				class="h-12 px-8 text-base font-semibold"
+						class="mt-5 bg-accent text-white hover:bg-accent/90"
+				onclick={() => openDemo(0)}
 			>
 				View Demo
-				<ArrowRight class="ml-2 h-4 w-4" />
 			</Button>
 		</div>
 	</div>
 </section>
+
+<!-- ==================== DEMO MODAL ==================== -->
+{#if demoOpen}
+	<div
+		role="dialog"
+		aria-modal="true"
+		aria-label="Product demo"
+		class="fixed inset-0 z-100 flex items-center justify-center p-4"
+		onkeydown={handleModalKeydown}
+		tabindex="-1"
+	>
+		<!-- Backdrop -->
+		<div
+			class="absolute inset-0 bg-black/70 backdrop-blur-sm"
+			role="presentation"
+			onclick={closeDemo}
+		></div>
+
+		<!-- Modal panel -->
+		<div class="relative z-10 flex w-full max-w-5xl flex-col overflow-hidden rounded-2xl border border-border bg-background shadow-2xl lg:h-140 lg:flex-row">
+
+			<!-- Close button -->
+			<button
+				type="button"
+				class="absolute right-4 top-4 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-muted text-muted-foreground transition-colors hover:bg-muted/80"
+				onclick={closeDemo}
+				aria-label="Close demo"
+			>
+				<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+			</button>
+
+			<!-- Image / GIF -->
+			<div class="relative w-full overflow-hidden bg-muted lg:w-3/5">
+				<img
+					src={demoSlides[demoSlide].img}
+					alt={demoSlides[demoSlide].title}
+					class="h-56 w-full object-cover object-top sm:h-72 lg:h-full"
+				/>
+			</div>
+
+			<!-- Text panel -->
+			<div class="flex w-full flex-col justify-between p-8 lg:w-2/5">
+				<div>
+					<p class="text-xs font-semibold uppercase tracking-widest text-accent">
+						Step {demoSlides[demoSlide].step} of {demoSlides.length}
+					</p>
+					<h3 class="mt-2 text-2xl font-bold tracking-tight text-foreground">
+						{demoSlides[demoSlide].title}
+					</h3>
+					<p class="mt-4 text-sm leading-relaxed text-muted-foreground">
+						{demoSlides[demoSlide].comment}
+					</p>
+				</div>
+
+				<!-- Dot indicators -->
+				<div class="mt-8 flex items-center gap-2">
+					{#each demoSlides as _, idx (idx)}
+						<button
+							type="button"
+							class="h-2 rounded-full transition-all duration-300 {idx === demoSlide ? 'w-6 bg-accent' : 'w-2 bg-border hover:bg-muted-foreground'}"
+							onclick={() => (demoSlide = idx)}
+							aria-label="Go to slide {idx + 1}"
+						></button>
+					{/each}
+					<Button
+						size="sm"
+						class="ml-auto bg-accent text-white hover:bg-accent/90"
+						onclick={nextSlide}
+					>
+						{demoSlide === demoSlides.length - 1 ? 'Start over' : 'Next'}
+						<ArrowRight class="ml-1 h-3.5 w-3.5" />
+					</Button>
+				</div>
+			</div>
+		</div>
+	</div>
+{/if}
 
 <!-- ==================== STATS BANNER ==================== -->
 <section class="relative overflow-hidden bg-surface-dark py-24">
@@ -382,16 +498,18 @@
 	></div>
 	<div class="relative mx-auto max-w-7xl px-6">
 		<div class="mx-auto max-w-2xl text-center">
-		<h2 class="text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl">
+            <h2 class="text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl">
 				Let our numbers speak
 			</h2>
 			<p class="mt-4 text-lg text-white/50">
 				Backed by data. Driven by results.
 			</p>
 		</div>
-		<div class="mx-auto mt-16 grid max-w-4xl grid-cols-2 gap-4 sm:grid-cols-4 sm:gap-8">
+		<div class="mx-auto mt-16 grid max-w-4xl grid-cols-2 gap-4 sm:grid-cols-4 sm:gap-4">
 			{#each bannerStats as stat (stat.label)}
-				{@render statItem(stat.value, stat.label, 'lg')}
+				<div class="rounded-2xl border border-white/10 bg-white/5 px-6 py-8 backdrop-blur-sm">
+					{@render statItem(stat.value, stat.label, 'lg')}
+				</div>
 			{/each}
 		</div>
 	</div>
@@ -407,35 +525,66 @@
 			'light'
 		)}
 
-		<div class="mx-auto mt-20 grid max-w-5xl gap-8 lg:grid-cols-3">
+		<!-- Monthly / Annual Toggle -->
+		<div class="mx-auto mt-12 flex items-center justify-center gap-3">
+			<span class="text-sm font-medium {!isAnnual ? 'text-foreground' : 'text-muted-foreground'}">Monthly</span>
+			<button
+				type="button"
+				onclick={() => (isAnnual = !isAnnual)}
+				class="relative inline-flex h-7 w-12 shrink-0 cursor-pointer items-center rounded-full border border-border transition-colors {isAnnual ? 'bg-accent' : 'bg-muted'}"
+				role="switch"
+				aria-checked={isAnnual}
+				aria-label="Toggle annual billing"
+			>
+				<span
+					class="pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow-sm transition-transform {isAnnual ? 'translate-x-5.5' : 'translate-x-0.75'}"
+				></span>
+			</button>
+			<span class="text-sm font-medium {isAnnual ? 'text-foreground' : 'text-muted-foreground'}">
+				Annual
+				<span class="ml-1 text-xs font-semibold text-accent">Save 20%</span>
+			</span>
+		</div>
+
+		<!-- Core Plans — row 1 -->
+		<div class="mx-auto mt-8 grid max-w-3xl gap-4 lg:grid-cols-3">
 			{#each plans as plan (plan.name)}
+				{@const tier = isAnnual ? plan.annual : plan.monthly}
 				<div
-					class="relative flex flex-col rounded-2xl border p-6 transition-all duration-300 sm:p-10 {plan.popular
-						? 'border-accent bg-accent/5 shadow-xl shadow-accent/5'
+					class="relative flex flex-col rounded-xl border p-5 transition-all duration-300 {plan.popular
+						? 'border-accent bg-accent/5 shadow-lg shadow-accent/5 lg:scale-105'
 						: 'border-border bg-card hover:border-accent/30'}"
 				>
 					{#if plan.popular}
-						<Badge class="absolute -top-3 left-1/2 -translate-x-1/2 bg-accent px-4 py-1 text-white">
+						<Badge class="absolute -top-3 left-1/2 -translate-x-1/2 bg-accent px-3 py-0.5 text-xs text-white">
 							Most Popular
 						</Badge>
 					{/if}
-					<h3 class="text-xl font-semibold text-card-foreground">{plan.name}</h3>
-					<p class="mt-1 text-sm text-muted-foreground">{plan.description}</p>
-					<div class="mt-6 flex items-baseline gap-1">
-						<span class="text-4xl font-bold text-card-foreground">{plan.price}</span>
-						<span class="text-muted-foreground">{plan.period}</span>
+					<h3 class="text-base font-semibold text-card-foreground">{plan.name}</h3>
+					<p class="mt-0.5 text-xs text-muted-foreground">{plan.description}</p>
+
+					<div class="mt-4 flex items-baseline gap-1">
+						<span class="text-3xl font-bold text-card-foreground">{tier.price}</span>
+						<span class="text-sm text-muted-foreground">/mo</span>
 					</div>
-					<Separator class="my-8" />
-					<ul class="flex-1 space-y-4">
+					{#if isAnnual}
+						<p class="mt-0.5 text-xs text-muted-foreground">Billed annually</p>
+					{/if}
+
+					<Separator class="my-4" />
+
+					<ul class="flex-1 space-y-2">
 						{#each plan.features as feat (feat)}
-							<li class="flex items-center gap-3 text-sm text-muted-foreground">
-								<Check class="h-4 w-4 shrink-0 text-accent" />
+							<li class="flex items-center gap-2 text-xs text-muted-foreground">
+								<Check class="h-3.5 w-3.5 shrink-0 text-accent" />
 								{feat}
 							</li>
 						{/each}
 					</ul>
+
 					<Button
-						class="mt-10 w-full {plan.popular
+						href={tier.href}
+						class="mt-5 w-full {plan.popular
 							? 'bg-accent text-white hover:bg-accent/90'
 							: 'bg-primary text-primary-foreground hover:bg-primary/90'}"
 					>
@@ -445,8 +594,67 @@
 			{/each}
 		</div>
 
+		<!-- Team Plans — row 2, centered -->
+		<div class="mx-auto mt-4 flex max-w-3xl flex-col items-center gap-4 lg:flex-row lg:justify-center">
+			{#each teamPlans as plan (plan.name)}
+				{@const tier = isAnnual ? plan.annual : plan.monthly}
+				<div class="flex w-full flex-col rounded-xl border border-border bg-card p-5 transition-all duration-300 hover:border-accent/30 lg:w-[calc((100%-1rem)/3)]">
+					<div class="flex items-center gap-2">
+						<h3 class="text-base font-semibold text-card-foreground">{plan.name}</h3>
+						<Badge variant="outline" class="text-[10px] uppercase">{plan.seats}</Badge>
+					</div>
+					<p class="mt-0.5 text-xs text-muted-foreground">{plan.description}</p>
+
+					<div class="mt-4 flex items-baseline gap-1">
+						<span class="text-3xl font-bold text-card-foreground">{tier.price}</span>
+						<span class="text-sm text-muted-foreground">/mo</span>
+					</div>
+					{#if isAnnual}
+						<p class="mt-0.5 text-xs text-muted-foreground">Billed annually</p>
+					{/if}
+
+					<Separator class="my-4" />
+
+					<ul class="flex-1 space-y-2">
+						{#each plan.features as feat (feat)}
+							<li class="flex items-center gap-2 text-xs text-muted-foreground">
+								<Check class="h-3.5 w-3.5 shrink-0 text-accent" />
+								{feat}
+							</li>
+						{/each}
+					</ul>
+
+					<Button
+						href={tier.href}
+						class="mt-5 w-full bg-primary text-primary-foreground hover:bg-primary/90"
+					>
+						Get Started
+					</Button>
+				</div>
+			{/each}
+		</div>
+
+		<!-- SecureSend Add-on — row 3, full width -->
+        <div class="flex items-center justify-between gap-6 mx-auto mt-6 max-w-3xl rounded-2xl border border-dashed border-border bg-card px-8 py-5">
+            <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
+                <div class="flex items-center gap-2">
+                    <h3 class="text-lg font-semibold text-card-foreground">SecureSend</h3>
+                    <Badge variant="outline" class="text-[10px] uppercase">Add-on</Badge>
+                </div>
+                <p class="text-sm text-muted-foreground">
+                    Encrypted document exchange with identity verification
+                </p>
+            </div>
+            <div class="flex shrink-0 items-center gap-4">
+                <div class="flex items-baseline gap-1">
+                    <span class="text-2xl font-bold text-card-foreground">+$99</span>
+                    <span class="text-sm text-muted-foreground">/mo</span>
+                </div>
+            </div>
+        </div>
+
 		<p class="mt-10 text-center text-sm text-muted-foreground">
-			All prices in USD. Annual plans available. Cancel anytime.
+			All prices in USD. Annual plans billed yearly. Cancel anytime.
 		</p>
 	</div>
 </section>
