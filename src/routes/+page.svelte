@@ -21,7 +21,8 @@
 		Lock,
 		Globe,
 		ChevronRight,
-		Check
+		Check,
+        EyeIcon
 	} from '@lucide/svelte';
 
 	let mcNumber = $state('');
@@ -68,9 +69,9 @@
 		},
 		{
 			icon: Database,
-			title: '30,000+ Flagged Entities',
+			title: 'Constantly Updated Database',
 			description:
-				'Our database is constantly updated to keep you ahead of fraud and risky partnerships.'
+				'Our fraud database grows every day — so the intelligence you act on is never stale.'
 		},
 		{
 			icon: Eye,
@@ -124,7 +125,7 @@
 			icon: AlertTriangle,
 			title: 'Advanced Fraud Detection',
 			description:
-				'We cross-reference each profile against our extensive database of 30,000+ known scammers, fraudsters, and high-risk operators.'
+				'Every profile is cross-referenced against our fraud database of known scammers, stolen identities, and high-risk operators.'
 		},
 		{
 			number: '04',
@@ -193,7 +194,7 @@
 	const bannerStats = [
 		{ value: '30K+', label: 'Flagged Entities' },
 		{ value: '100+', label: 'Data Sources' },
-		{ value: '50K+', label: 'Dirty Data Points' },
+		{ value: '40m+', label: 'Dirty Data Points' },
 		{ value: '24/7', label: 'Monitoring' }
 	];
 
@@ -405,10 +406,11 @@
 		<div class="mt-16 text-center">
 			<Button
 				size="lg"
-						class="mt-5 bg-accent text-white hover:bg-accent/90"
+                class="mt-5 bg-accent text-white hover:bg-accent/90"
 				onclick={() => openDemo(0)}
 			>
 				View Demo
+                <EyeIcon class="ml-2" />
 			</Button>
 		</div>
 	</div>
