@@ -1,0 +1,134 @@
+<script lang="ts">
+	import { Button } from '$lib/components/ui/button';
+	import { Badge } from '$lib/components/ui/badge';
+	import DemoModal from './DemoModal.svelte';
+	import { Shield, FileSearch, Lock, Activity, ArrowRight } from '@lucide/svelte';
+	import secureSendIcon from '$lib/assets/img/SecureSendIcon.svg';
+	import screenshot1 from '$lib/assets/img/Screenshot-1.png';
+	import screenshot2 from '$lib/assets/img/Screenshot-2.png';
+	import screenshot3 from '$lib/assets/img/Screenshot-3.png';
+	import screenshot4 from '$lib/assets/img/Screenshot-4.png';
+	import screenshotSecureSend from '$lib/assets/img/Screenshot-securesend.png';
+
+	let ssOpen = $state(false);
+	let ssSlide = $state(0);
+
+	const ssSlides = [
+		{ img: screenshot1, step: '01', title: 'Carrier Lookup', comment: 'Look up any carrier by DOT number in TBR, then launch a SecureSend engagement directly from the results.' },
+		{ img: screenshot2, step: '02', title: 'Send Secure Request', comment: 'A tracked, identity-gated request is sent to the carrier\'s principals — owners, drivers, or contacts — to submit their documents.' },
+		{ img: screenshot3, step: '03', title: 'KYC Verification', comment: 'The recipient must pass identity verification before the document is revealed. No more impersonation or document interception.' },
+		{ img: screenshot4, step: '04', title: 'Document Delivered', comment: 'Once verified, the document is unlocked and you get a full engagement history, email notifications, and audit trail.' }
+	];
+
+	function openSsDemo(index = 0) { ssSlide = index; ssOpen = true; }
+</script>
+
+<section class="relative overflow-hidden bg-surface-dark py-32">
+	<div class="pointer-events-none absolute -left-40 top-0 h-100 w-100 rounded-full bg-secure-send/10 blur-[120px]"></div>
+	<div class="pointer-events-none absolute -right-40 bottom-0 h-80 w-80 rounded-full bg-secure-send/8 blur-[100px]"></div>
+
+	<div class="relative mx-auto max-w-7xl px-6">
+		<div class="flex flex-col items-center gap-16 lg:flex-row lg:gap-20">
+			<div class="w-full lg:w-1/2">
+				<div class="flex items-center gap-3">
+					<div class="flex h-10 w-10 items-center justify-center rounded-xl bg-secure-send/15">
+						<img src={secureSendIcon} alt="" aria-hidden="true" class="h-6 w-6" />
+					</div>
+					<Badge class="border-secure-send/30 bg-secure-send/10 text-secure-send text-xs font-semibold">
+						Premium Add-on
+					</Badge>
+				</div>
+
+				<h2 class="mt-6 text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl">
+					SecureSend
+				</h2>
+				<p class="mt-2 text-lg font-medium text-secure-send-light">
+					Verified document delivery for freight
+				</p>
+
+				<p class="mt-6 text-base leading-relaxed text-white/60">
+					Close the gap between finding a carrier and qualifying them. After looking up a carrier by DOT number,
+					launch a SecureSend engagement directly — sending a secure, identity-gated request to the carrier's
+					principals to submit their documents.
+				</p>
+				<p class="mt-4 text-base leading-relaxed text-white/60">
+					The recipient must pass KYC identity verification before documents are unlocked.
+					No more chasing carriers over email and phone to collect W-9s, insurance certs, and compliance docs.
+				</p>
+
+				<div class="mt-8 grid grid-cols-2 gap-4">
+					<div class="rounded-xl border border-secure-send/25 bg-secure-send/10 p-4">
+						<div class="flex h-9 w-9 items-center justify-center rounded-lg bg-secure-send/20">
+							<Shield class="h-5 w-5 text-secure-send-light" />
+						</div>
+						<p class="mt-3 text-sm font-medium text-white">Identity-Gated Access</p>
+						<p class="mt-1 text-xs text-white/50">KYC verification before any document is revealed</p>
+					</div>
+					<div class="rounded-xl border border-secure-send/25 bg-secure-send/10 p-4">
+						<div class="flex h-9 w-9 items-center justify-center rounded-lg bg-secure-send/20">
+							<FileSearch class="h-5 w-5 text-secure-send-light" />
+						</div>
+						<p class="mt-3 text-sm font-medium text-white">Full Audit Trail</p>
+						<p class="mt-1 text-xs text-white/50">Engagement history, email notifications, and tracking</p>
+					</div>
+					<div class="rounded-xl border border-secure-send/25 bg-secure-send/10 p-4">
+						<div class="flex h-9 w-9 items-center justify-center rounded-lg bg-secure-send/20">
+							<Lock class="h-5 w-5 text-secure-send-light" />
+						</div>
+						<p class="mt-3 text-sm font-medium text-white">Fraud Elimination</p>
+						<p class="mt-1 text-xs text-white/50">Eliminates interception and impersonation risk</p>
+					</div>
+					<div class="rounded-xl border border-secure-send/25 bg-secure-send/10 p-4">
+						<div class="flex h-9 w-9 items-center justify-center rounded-lg bg-secure-send/20">
+							<Activity class="h-5 w-5 text-secure-send-light" />
+						</div>
+						<p class="mt-3 text-sm font-medium text-white">Usage-Metered</p>
+						<p class="mt-1 text-xs text-white/50">Pay per engagement and reveal — scale as you grow</p>
+					</div>
+				</div>
+
+				<div class="mt-10 flex flex-wrap items-center gap-4">
+					<Button
+						class="h-12 gap-2 bg-secure-send px-6 text-base font-semibold text-white hover:bg-secure-send/90"
+						onclick={() => openSsDemo(0)}
+					>
+						<img src={secureSendIcon} alt="" aria-hidden="true" class="h-5 w-5" />
+						SecureSend
+					</Button>
+					<Button
+						variant="outline"
+						class="h-12 border-white/20 bg-transparent px-6 text-base font-semibold text-white hover:bg-white/10"
+						onclick={() => openSsDemo(0)}
+					>
+						View Demo
+						<ArrowRight class="ml-2 h-4 w-4" />
+					</Button>
+				</div>
+			</div>
+
+			<div class="w-full lg:w-1/2">
+				<div class="relative">
+					<div class="absolute -inset-1 rounded-2xl bg-secure-send/20 blur-xl"></div>
+					<div class="relative overflow-hidden rounded-2xl border border-secure-send/30 bg-surface-dark shadow-2xl">
+						<img
+							src={screenshotSecureSend}
+							alt="SecureSend workflow"
+							class="h-80 w-full object-cover object-top lg:h-120"
+						/>
+						<div class="pointer-events-none absolute inset-0 bg-linear-to-t from-secure-send/20 via-transparent to-transparent"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+
+<DemoModal
+	bind:open={ssOpen}
+	slides={ssSlides}
+	bind:currentSlide={ssSlide}
+	accentClass="bg-secure-send"
+	accentTextClass="text-secure-send"
+	borderClass="border-secure-send/30"
+	icon={{ src: secureSendIcon, alt: 'SecureSend' }}
+/>
