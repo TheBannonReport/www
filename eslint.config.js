@@ -40,5 +40,16 @@ export default defineConfig(
 		// Override or add rule settings here, such as:
 		// 'svelte/button-has-type': 'error'
 		rules: {}
+	},
+	{
+		"svelte/no-navigation-without-resolve": [
+			"error",
+			{
+				"ignoreGoto": false,
+				"ignoreLinks": false,
+				"ignorePushState": false,
+				"ignoreReplaceState": false
+			}
+		]
 	}
 );

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import logo from '$lib/assets/logo.png';
+	import secureSendIcon from '$lib/assets/img/SecureSendIcon.svg';
 	import { Menu, X } from '@lucide/svelte';
 
 	let mobileMenuOpen = $state(false);
@@ -10,6 +11,7 @@
 		{ label: 'About', href: '#about' },
 		{ label: 'Products', href: '#products' },
 		{ label: 'How It Works', href: '#how-it-works' },
+		{ label: 'SecureSend', href: '#securesend' },
 		{ label: 'Pricing', href: '#pricing' },
 		{ label: 'Blog', href: '/blog' }
 	];
@@ -49,17 +51,31 @@
 		<div class="hidden items-center gap-10 md:flex">
 			{#each navLinks as link (link.label)}
 				{@const isActive = activeSection === link.href.slice(1)}
-				<a
-					href={link.href}
-					class="relative text-sm font-medium tracking-wide transition-colors {isActive
-						? 'text-white'
-						: 'text-white/70 hover:text-white'}"
-				>
-					{link.label}
-					{#if isActive}
-						<span class="absolute -bottom-1 left-0 h-px w-full bg-accent"></span>
-					{/if}
-				</a>
+				{#if link.label === 'SecureSend'}
+					<a
+						href={link.href}
+						class="relative flex items-center gap-1.5 text-sm font-medium tracking-wide transition-colors {isActive
+							? 'text-secure-send-light'
+							: 'text-secure-send hover:text-secure-send-light'}"
+					>
+						{link.label}
+						{#if isActive}
+							<span class="absolute -bottom-1 left-0 h-px w-full bg-secure-send"></span>
+						{/if}
+					</a>
+				{:else}
+					<a
+						href={link.href}
+						class="relative text-sm font-medium tracking-wide transition-colors {isActive
+							? 'text-white'
+							: 'text-white/70 hover:text-white'}"
+					>
+						{link.label}
+						{#if isActive}
+							<span class="absolute -bottom-1 left-0 h-px w-full bg-accent"></span>
+						{/if}
+					</a>
+				{/if}
 			{/each}
 		</div>
 
@@ -93,20 +109,30 @@
 			<div class="flex flex-col gap-4">
 				{#each navLinks as link (link.label)}
 					{@const isActive = activeSection === link.href.slice(1)}
-					<a
-						href={link.href}
-						class="text-base font-medium transition-colors {isActive
-							? 'text-white underline decoration-accent underline-offset-4'
-							: 'text-white/70 hover:text-white'}"
-						onclick={() => (mobileMenuOpen = false)}
-					>
-						{link.label}
-					</a>
+					{#if link.label === 'SecureSend'}
+						<a
+							href={link.href}
+							class="flex items-center gap-2 text-base font-medium transition-colors {isActive
+								? 'text-secure-send-light underline decoration-secure-send underline-offset-4'
+								: 'text-secure-send/70 hover:text-secure-send-light'}"
+							onclick={() => (mobileMenuOpen = false)}
+						>
+							<img src={secureSendIcon} alt="" aria-hidden="true" class="h-4 w-4" />
+							{link.label}
+						</a>
+					{:else}
+						<a
+							href={link.href}
+							class="text-base font-medium transition-colors {isActive
+								? 'text-white underline decoration-accent underline-offset-4'
+								: 'text-white/70 hover:text-white'}"
+							onclick={() => (mobileMenuOpen = false)}
+						>
+							{link.label}
+						</a>
+					{/if}
 				{/each}
 				<div class="mt-4 flex flex-col gap-3 border-t border-white/10 pt-4">
-					<Button variant="ghost" class="w-full justify-center text-white/70 hover:text-white hover:bg-white/10">
-						Sign In
-					</Button>
 					<Button class="w-full justify-center bg-accent text-white hover:bg-accent/90">
 						Get Started
 					</Button>
