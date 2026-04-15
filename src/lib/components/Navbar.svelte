@@ -3,20 +3,30 @@
 	import logo from '$lib/assets/logo.png';
 	import secureSendIcon from '$lib/assets/img/SecureSendIcon.svg';
 	import { Menu, X } from '@lucide/svelte';
+	import { page } from '$app/state';
 
 	let mobileMenuOpen = $state(false);
 	let activeSection = $state('');
 
 	const navLinks = [
-		{ label: 'About', href: '#about' },
-		{ label: 'Products', href: '#products' },
-		{ label: 'How It Works', href: '#how-it-works' },
-		{ label: 'SecureSend', href: '#securesend' },
-		{ label: 'Pricing', href: '#pricing' },
+		{ label: 'About', href: '/#about' },
+		{ label: 'Products', href: '/#products' },
+		{ label: 'How It Works', href: '/#how-it-works' },
+		{ label: 'SecureSend', href: '/#securesend' },
+		{ label: 'Pricing', href: '/pricing' },
 		{ label: 'Blog', href: '/blog' }
 	];
 
-	const sectionIds = navLinks.map((l) => l.href.slice(1)).filter((id) => !id.startsWith('/'));
+	const sectionIds = navLinks
+		.filter((l) => l.href.startsWith('/#'))
+		.map((l) => l.href.slice(2));
+
+	function isActive(link: { href: string }): boolean {
+		if (link.href.startsWith('/#')) {
+			return page.url.pathname === '/' && activeSection === link.href.slice(2);
+		}
+		return page.url.pathname === link.href || page.url.pathname.startsWith(link.href + '/');
+	}
 
 	$effect(() => {
 		const observers: IntersectionObserver[] = [];
@@ -50,28 +60,27 @@
 		<!-- Desktop Nav -->
 		<div class="hidden items-center gap-10 md:flex">
 			{#each navLinks as link (link.label)}
-				{@const isActive = activeSection === link.href.slice(1)}
 				{#if link.label === 'SecureSend'}
 					<a
 						href={link.href}
-						class="relative flex items-center gap-1.5 text-sm font-medium tracking-wide transition-colors {isActive
+						class="relative flex items-center gap-1.5 text-sm font-medium tracking-wide transition-colors {isActive(link)
 							? 'text-secure-send-light'
 							: 'text-secure-send hover:text-secure-send-light'}"
 					>
 						{link.label}
-						{#if isActive}
+						{#if isActive(link)}
 							<span class="absolute -bottom-1 left-0 h-px w-full bg-secure-send"></span>
 						{/if}
 					</a>
 				{:else}
 					<a
 						href={link.href}
-						class="relative text-sm font-medium tracking-wide transition-colors {isActive
+						class="relative text-sm font-medium tracking-wide transition-colors {isActive(link)
 							? 'text-white'
 							: 'text-white/70 hover:text-white'}"
 					>
 						{link.label}
-						{#if isActive}
+						{#if isActive(link)}
 							<span class="absolute -bottom-1 left-0 h-px w-full bg-accent"></span>
 						{/if}
 					</a>
@@ -108,11 +117,10 @@
 		<div class="border-t border-white/10 bg-surface-dark px-6 py-6 md:hidden">
 			<div class="flex flex-col gap-4">
 				{#each navLinks as link (link.label)}
-					{@const isActive = activeSection === link.href.slice(1)}
 					{#if link.label === 'SecureSend'}
 						<a
 							href={link.href}
-							class="flex items-center gap-2 text-base font-medium transition-colors {isActive
+							class="flex items-center gap-2 text-base font-medium transition-colors {isActive(link)
 								? 'text-secure-send-light underline decoration-secure-send underline-offset-4'
 								: 'text-secure-send/70 hover:text-secure-send-light'}"
 							onclick={() => (mobileMenuOpen = false)}
@@ -123,7 +131,7 @@
 					{:else}
 						<a
 							href={link.href}
-							class="text-base font-medium transition-colors {isActive
+							class="text-base font-medium transition-colors {isActive(link)
 								? 'text-white underline decoration-accent underline-offset-4'
 								: 'text-white/70 hover:text-white'}"
 							onclick={() => (mobileMenuOpen = false)}
