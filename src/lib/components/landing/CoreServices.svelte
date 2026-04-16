@@ -25,7 +25,7 @@
 	];
 </script>
 
-<section id="products" class="bg-background py-32">
+<section id="products" class="bg-background py-16 sm:py-32">
 	<div class="mx-auto max-w-7xl px-6">
 		<SectionHeader
 			label="Core Services"

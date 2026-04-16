@@ -111,40 +111,48 @@
 		</button>
 	</div>
 
-	<!-- Mobile Menu -->
-	{#if mobileMenuOpen}
-		<div class="border-t border-white/10 bg-surface-dark px-6 py-6 md:hidden">
-			<div class="flex flex-col gap-4">
-				{#each navLinks as link (link.label)}
-					{#if link.label === 'SecureSend'}
-						<a
-							href={link.href}
-							class="flex items-center gap-2 text-base font-medium transition-colors {isActive(link)
-								? 'text-secure-send-light underline decoration-secure-send underline-offset-4'
-								: 'text-secure-send/70 hover:text-secure-send-light'}"
-							onclick={() => (mobileMenuOpen = false)}
-						>
-							<img src={secureSendIcon} alt="" aria-hidden="true" class="h-4 w-4" />
-							{link.label}
-						</a>
-					{:else}
-						<a
-							href={link.href}
-							class="text-base font-medium transition-colors {isActive(link)
-								? 'text-white underline decoration-accent underline-offset-4'
-								: 'text-white/70 hover:text-white'}"
-							onclick={() => (mobileMenuOpen = false)}
-						>
-							{link.label}
-						</a>
-					{/if}
-				{/each}
-				<div class="mt-4 flex flex-col gap-3 border-t border-white/10 pt-4">
-					<Button class="w-full justify-center bg-white text-surface-dark hover:bg-white/90">
-						Get Started
-					</Button>
-				</div>
+</nav>
+
+<!-- Mobile Menu (outside nav to avoid stacking context issues) -->
+{#if mobileMenuOpen}
+	<!-- Backdrop — covers entire screen, blurs page content -->
+	<button
+		class="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm md:hidden"
+		onclick={() => (mobileMenuOpen = false)}
+		aria-label="Close menu"
+	></button>
+	<!-- Panel -->
+	<div class="fixed inset-x-0 top-[65px] z-50 border-t border-white/10 bg-surface-dark px-6 py-6 md:hidden">
+		<div class="flex flex-col gap-4">
+			{#each navLinks as link (link.label)}
+				{#if link.label === 'SecureSend'}
+					<a
+						href={link.href}
+						class="flex items-center gap-2 text-base font-medium transition-colors {isActive(link)
+							? 'text-secure-send-light underline decoration-secure-send underline-offset-4'
+							: 'text-secure-send/70 hover:text-secure-send-light'}"
+						onclick={() => (mobileMenuOpen = false)}
+					>
+						<img src={secureSendIcon} alt="" aria-hidden="true" class="h-4 w-4" />
+						{link.label}
+					</a>
+				{:else}
+					<a
+						href={link.href}
+						class="text-base font-medium transition-colors {isActive(link)
+							? 'text-white underline decoration-accent underline-offset-4'
+							: 'text-white/70 hover:text-white'}"
+						onclick={() => (mobileMenuOpen = false)}
+					>
+						{link.label}
+					</a>
+				{/if}
+			{/each}
+			<div class="mt-4 flex flex-col gap-3 border-t border-white/10 pt-4">
+				<Button class="w-full justify-center bg-white text-surface-dark hover:bg-white/90">
+					Get Started
+				</Button>
 			</div>
 		</div>
-	{/if}
-</nav>
+	</div>
+{/if}

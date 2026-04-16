@@ -49,10 +49,7 @@
 	];
 </script>
 
-<section id="securesend" class="relative overflow-hidden bg-surface-dark py-32">
-	<!-- <div class="pointer-events-none absolute -left-40 top-0 h-100 w-100 rounded-full bg-secure-send/10 blur-[120px]"></div>
-	<div class="pointer-events-none absolute -right-40 bottom-0 h-80 w-80 rounded-full bg-secure-send/8 blur-[100px]"></div> -->
-
+<section id="securesend" class="relative overflow-hidden bg-surface-dark py-16 sm:py-32">
 	<div class="relative mx-auto max-w-7xl px-6">
 		<div class="flex flex-col items-center gap-16 lg:flex-row lg:gap-20">
 			<div class="w-full lg:w-1/2">
@@ -109,29 +106,16 @@
 					{@render card( Icon, title, text )}
 				{/each}
 				</div>
-
-				<div class="mt-10 flex flex-wrap items-center gap-4">
-					<!-- <Button
-						class="h-12 gap-3 bg-secure-send px-6 text-base font-semibold text-white hover:bg-secure-send/90"
-						onclick={() => openSsDemo(0)}
-					>
-						<img src={secureSendIcon} alt="" aria-hidden="true" class="h-7 w-7" />
-						SecureSend
-					</Button> -->
-					
-				</div>
 			</div>
 
 			<div class="w-full lg:w-1/2">
 				<div class="relative">
-					<!-- <div class="absolute -inset-1 rounded-2xl bg-secure-send/20 blur-xl"></div> -->
 					<BrowserMockup variant="mobile" url="app.thebannonreport.com/securesend" class="relative border-secure-send/30">
 						<img
 							src={screenshotSecureSendMobile}
 							alt="SecureSend workflow"
-							class="h-80 w-full object-cover object-top lg:h-120"
+							class="h-120 w-full object-cover object-top"
 						/>
-						<!-- <div class="pointer-events-none absolute inset-0 bg-linear-to-t from-secure-send/20 via-transparent to-transparent"></div> -->
 					</BrowserMockup>
 				</div>
 			</div>

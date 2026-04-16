@@ -48,7 +48,7 @@
 	function openDemo(index = 0) { demoSlide = index; demoOpen = true; }
 </script>
 
-<section id="how-it-works" class="bg-background py-32">
+<section id="how-it-works" class="bg-background py-16 sm:py-32">
 	<div class="mx-auto max-w-7xl px-6">
 		<SectionHeader
 			label="How It Works"
