@@ -28,7 +28,7 @@
 			number: '03',
 			icon: AlertTriangle,
 			title: 'Fraud Database Cross-Check',
-			description: 'Profiles are matched against our ever-growing database of 30,000+ flagged scammers, stolen identities, and high-risk operators.'
+			description: 'Profiles are matched against our ever-growing database of 100,000+ flagged scammers, stolen identities, and high-risk operators.'
 		},
 		{
 			number: '04',

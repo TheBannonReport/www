@@ -34,7 +34,7 @@
 					<img src={logo} alt="The Bannon Report" class="h-8 w-auto" />
 				</a>
 				<p class="mt-4 max-w-xs text-sm leading-relaxed text-white/50">
-					Protecting the freight industry with real-time vetting, predictive scoring, and 30,000+ flagged entities.
+					Protecting the freight industry with real-time vetting, predictive scoring, and 100,000+ flagged entities.
 				</p>
 			</div>
 

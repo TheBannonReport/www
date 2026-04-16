@@ -1,6 +1,6 @@
 <script lang="ts">
 	const bannerStats = [
-		{ value: '30K+', label: 'Flagged Entities' },
+		{ value: '100K+', label: 'Flagged Entities' },
 		{ value: '100+', label: 'Data Sources' },
 		{ value: '40m+', label: 'Dirty Data Points' },
 		{ value: '24/7', label: 'Monitoring' }

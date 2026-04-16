@@ -45,7 +45,7 @@
 			<p class="mx-auto mt-4 max-w-2xl text-lg leading-relaxed text-white/60">
 				Help protect the freight industry. Every report is reviewed by our team and cross-referenced
 				against <span class="font-semibold text-white">4M+ dirty data points</span> and
-				<span class="font-semibold text-white">30,000+ flagged entities</span>.
+				<span class="font-semibold text-white">100,000+ flagged entities</span>.
 			</p>
 		</div>
 	</section>

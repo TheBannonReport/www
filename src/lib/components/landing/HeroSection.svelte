@@ -13,7 +13,7 @@
 	}
 
 	const stats = [
-		{ value: '30,000+', label: 'Flagged Entities' },
+		{ value: '100,000+', label: 'Flagged Entities' },
 		{ value: '4M+', label: 'Dirty Data Points' },
 		{ value: '100+', label: 'Verified Data Sources' },
 		{ value: '2x Daily', label: 'Monitoring Alerts' }
@@ -39,7 +39,7 @@
 
 			<p class="mx-auto mb-20 sm:mb-0 mt-8 max-w-2xl text-md leading-relaxed text-white/50 sm:text-xl">
 				It only takes one bad broker or carrier to put your business at risk. We tap 100+ data
-				points, 4 million associated dirty data points, and 30,000+ flagged entities to spot the red flags before they cost you millions.
+				points, 4 million associated dirty data points, and 100,000+ flagged entities to spot the red flags before they cost you millions.
 			</p>
 
 			<form
