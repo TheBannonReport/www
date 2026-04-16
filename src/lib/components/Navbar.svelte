@@ -28,7 +28,20 @@
 		return page.url.pathname === link.href || page.url.pathname.startsWith(link.href + '/');
 	}
 
+	function handleNavClick(e: MouseEvent, link: { href: string }) {
+		if (!link.href.startsWith('/#')) return;
+		const id = link.href.slice(2);
+		// If already on home, prevent default and smooth-scroll
+		if (page.url.pathname === '/') {
+			e.preventDefault();
+			document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+		}
+		mobileMenuOpen = false;
+	}
+
 	$effect(() => {
+		// Re-run observers whenever the pathname changes (e.g. navigating back to /)
+		const _pathname = page.url.pathname;
 		const observers: IntersectionObserver[] = [];
 
 		for (const id of sectionIds) {
@@ -44,6 +57,12 @@
 
 			obs.observe(el);
 			observers.push(obs);
+		}
+
+		// If arriving with a hash, set active section immediately
+		const hash = page.url.hash?.slice(1);
+		if (hash && sectionIds.includes(hash)) {
+			activeSection = hash;
 		}
 
 		return () => observers.forEach((o) => o.disconnect());
@@ -63,6 +82,7 @@
 				{#if link.label === 'SecureSend'}
 					<a
 						href={link.href}
+						onclick={(e) => handleNavClick(e, link)}
 						class="relative flex items-center gap-1.5 text-sm font-medium tracking-wide transition-colors {isActive(link)
 							? 'text-secure-send-light'
 							: 'text-secure-send hover:text-secure-send-light'}"
@@ -75,6 +95,7 @@
 				{:else}
 					<a
 						href={link.href}
+						onclick={(e) => handleNavClick(e, link)}
 						class="relative text-sm font-medium tracking-wide transition-colors {isActive(link)
 							? 'text-white'
 							: 'text-white/70 hover:text-white'}"
@@ -132,7 +153,7 @@
 						class="flex items-center gap-2 text-base font-medium transition-colors {isActive(link)
 							? 'text-secure-send-light underline decoration-secure-send underline-offset-4'
 							: 'text-secure-send/70 hover:text-secure-send-light'}"
-						onclick={() => (mobileMenuOpen = false)}
+						onclick={(e) => handleNavClick(e, link)}
 					>
 						<img src={secureSendIcon} alt="" aria-hidden="true" class="h-4 w-4" />
 						{link.label}
@@ -143,7 +164,7 @@
 						class="text-base font-medium transition-colors {isActive(link)
 							? 'text-white underline decoration-accent underline-offset-4'
 							: 'text-white/70 hover:text-white'}"
-						onclick={() => (mobileMenuOpen = false)}
+						onclick={(e) => handleNavClick(e, link)}
 					>
 						{link.label}
 					</a>
