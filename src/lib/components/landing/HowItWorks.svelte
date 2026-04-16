@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import SectionHeader from './SectionHeader.svelte';
-	import DemoModal from './DemoModal.svelte';
-	import { Globe, BarChart3, AlertTriangle, CheckCircle, EyeIcon, ArrowRight } from '@lucide/svelte';
+	import { Globe, BarChart3, AlertTriangle, CheckCircle, Eye, EyeIcon, ArrowRight } from '@lucide/svelte';
 	import screenshot1 from '$lib/assets/img/Screenshot-1.png';
 	import screenshot2 from '$lib/assets/img/Screenshot-2.png';
 	import screenshot3 from '$lib/assets/img/Screenshot-3.png';
 	import screenshot4 from '$lib/assets/img/Screenshot-4.png';
+	import DemoModal from '../DemoModal.svelte';
 
 	let demoOpen = $state(false);
 	let demoSlide = $state(0);
@@ -16,25 +16,25 @@
 			number: '01',
 			icon: Globe,
 			title: 'Data Extraction',
-			description: 'We query over 100 carrier and broker data points from FMCSA, Safer, Secretary of State, Department of Insurance, and more.'
+			description: 'We pull from 100+ data sources — FMCSA, Safer, Secretary of State, Department of Insurance — to build a complete entity profile.'
 		},
 		{
 			number: '02',
 			icon: BarChart3,
 			title: '20-Point Risk Assessment',
-			description: 'Every entity undergoes rigorous evaluation using our proprietary vetting process to identify potential risks.'
+			description: 'Every entity undergoes a proprietary 20-point evaluation to surface hidden liabilities and risk indicators.'
 		},
 		{
 			number: '03',
 			icon: AlertTriangle,
-			title: 'Advanced Fraud Detection',
-			description: 'Every profile is cross-referenced against our fraud database of known scammers, stolen identities, and high-risk operators.'
+			title: 'Fraud Database Cross-Check',
+			description: 'Profiles are matched against our ever-growing database of 30,000+ flagged scammers, stolen identities, and high-risk operators.'
 		},
 		{
 			number: '04',
 			icon: CheckCircle,
-			title: 'Clear Results',
-			description: 'Every broker or carrier is scored so you can decide with confidence. No guesswork, just data-backed decisions.'
+			title: 'Score & Monitor',
+			description: 'Get a clear risk score — Safe, Review, Potential Risk, or Do Not Use — then monitor for changes with 2× daily alerts.'
 		}
 	];
 
@@ -84,7 +84,7 @@
 		<div class="mt-16 text-center">
 			<Button
 				size="lg"
-				class="mt-5 bg-accent text-white hover:bg-accent/90"
+				class="mt-5 bg-primary text-primary-foreground hover:bg-primary/90"
 				onclick={() => openDemo(0)}
 			>
 				View Demo

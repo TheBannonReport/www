@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
-	import DemoModal from './DemoModal.svelte';
-	import BrowserMockup from './BrowserMockup.svelte';
+	import DemoModal from '../DemoModal.svelte';
+	import BrowserMockup from '../BrowserMockup.svelte';
 	import { Shield, FileSearch, Lock, Activity, ArrowRight, EyeIcon } from '@lucide/svelte';
 	import secureSendIcon from '$lib/assets/img/SecureSendIcon.svg';
 	import screenshot1 from '$lib/assets/img/Screenshot-1.png';
@@ -76,7 +76,7 @@
 					</div>
 					<Button
 							variant="outline"
-							class="h-12 border-white/20 bg-transparent px-6 text-base font-semibold text-white hover:bg-white/90"
+							class="h-12 border-white/20 bg-transparent px-6 text-base font-semibold text-white hover:bg-white"
 							onclick={() => openSsDemo(0)}
 						>
 							View Demo

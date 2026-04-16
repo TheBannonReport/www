@@ -9,10 +9,9 @@
 	let activeSection = $state('');
 
 	const navLinks = [
-		{ label: 'About', href: '/#about' },
 		{ label: 'Products', href: '/#products' },
-		{ label: 'How It Works', href: '/#how-it-works' },
 		{ label: 'SecureSend', href: '/#securesend' },
+		{ label: 'How It Works', href: '/#how-it-works' },
 		{ label: 'Pricing', href: '/pricing' },
 		{ label: 'Blog', href: '/blog' }
 	];
@@ -93,7 +92,7 @@
 			<!-- <Button variant="ghost" class="text-white/70 hover:text-white hover:bg-white/10">
 				Sign In
 			</Button> -->
-			<Button class="bg-accent text-white hover:bg-accent/90">
+			<Button class="bg-white text-surface-dark hover:bg-white/90">
 				Get Started
 			</Button>
 		</div>
@@ -141,7 +140,7 @@
 					{/if}
 				{/each}
 				<div class="mt-4 flex flex-col gap-3 border-t border-white/10 pt-4">
-					<Button class="w-full justify-center bg-accent text-white hover:bg-accent/90">
+					<Button class="w-full justify-center bg-white text-surface-dark hover:bg-white/90">
 						Get Started
 					</Button>
 				</div>

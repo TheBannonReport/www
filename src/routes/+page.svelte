@@ -1,19 +1,13 @@
 ﻿<script lang="ts">
-import HeroSection from '$lib/components/HeroSection.svelte';
-import WhyChooseUs from '$lib/components/WhyChooseUs.svelte';
-import CoreServices from '$lib/components/CoreServices.svelte';
-import HowItWorks from '$lib/components/HowItWorks.svelte';
-import SecureSendSection from '$lib/components/SecureSendSection.svelte';
-// import StatsBanner from '$lib/components/StatsBanner.svelte';
-import PricingSection from '$lib/components/PricingSection.svelte';
-import FinalCta from '$lib/components/FinalCta.svelte';
+import HeroSection from '$lib/components/landing/HeroSection.svelte';
+import CoreServices from '$lib/components/landing/CoreServices.svelte';
+import HowItWorks from '$lib/components/landing/HowItWorks.svelte';
+import SecureSendSection from '$lib/components/landing/SecureSendSection.svelte';
+import PricingSection from '$lib/components/landing/PricingSection.svelte';
 </script>
 
 <HeroSection />
-<WhyChooseUs />
 <CoreServices />
-<HowItWorks />
 <SecureSendSection />
-<!-- <StatsBanner /> -->
+<HowItWorks />
 <PricingSection />
-<FinalCta />
