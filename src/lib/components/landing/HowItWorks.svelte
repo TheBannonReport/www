@@ -46,9 +46,10 @@
 	];
 
 	function openDemo(index = 0) { demoSlide = index; demoOpen = true; }
+	import LandingSection from './LandingSection.svelte';
 </script>
 
-<section id="how-it-works" class="bg-background py-16 sm:py-32">
+<LandingSection id="how-it-works">
 	<div class="mx-auto max-w-7xl px-6">
 		<SectionHeader
 			label="How It Works"
@@ -92,6 +93,6 @@
 			</Button>
 		</div>
 	</div>
-</section>
+</LandingSection>
 
 <DemoModal bind:open={demoOpen} slides={demoSlides} bind:currentSlide={demoSlide} />

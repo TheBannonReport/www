@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import { ArrowRight, ShieldAlert } from '@lucide/svelte';
+	import LandingSection from './LandingSection.svelte';
 </script>
 
-<section id="report" class="bg-background py-14 sm:py-20">
+<LandingSection id="report" py="py-14 sm:py-20">
 	<div class="mx-auto flex max-w-4xl flex-col items-center gap-6 px-6 text-center sm:flex-row sm:text-left">
 		<div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-destructive/10">
 			<ShieldAlert class="h-6 w-6 text-destructive" />
@@ -26,4 +27,4 @@
 			<ArrowRight class="ml-2 h-4 w-4" />
 		</Button>
 	</div>
-</section>
+</LandingSection>

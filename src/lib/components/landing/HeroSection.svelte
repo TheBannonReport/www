@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import { Search, ArrowRight } from '@lucide/svelte';
-	import semiTruck from '$lib/assets/img/semi-truck.png';
+	import semiTruck from '$lib/assets/img/semitruck.png';
 
 	let mcNumber = $state('');
 
@@ -18,9 +18,10 @@
 		{ value: '100+', label: 'Verified Data Sources' },
 		{ value: '2x Daily', label: 'Monitoring Alerts' }
 	];
+	import LandingSection from './LandingSection.svelte';
 </script>
 
-<section class="relative flex min-h-dvh items-center overflow-hidden bg-surface-dark">
+<LandingSection variant="dark" py="" class="flex min-h-dvh items-center">
 	<img
 		src={semiTruck}
 		alt="Magnificent Semi Truck"
@@ -75,4 +76,4 @@
 			{/each}
 		</div>
 	</div>
-</section>
+</LandingSection>

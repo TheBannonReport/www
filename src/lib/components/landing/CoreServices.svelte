@@ -23,9 +23,10 @@
 			tag: 'Full Protection'
 		}
 	];
+	import LandingSection from './LandingSection.svelte';
 </script>
 
-<section id="products" class="bg-background py-16 sm:py-32">
+<LandingSection id="products">
 	<div class="mx-auto max-w-7xl px-6">
 		<SectionHeader
 			label="Core Services"
@@ -56,4 +57,4 @@
 			{/each}
 		</div>
 	</div>
-</section>
+</LandingSection>

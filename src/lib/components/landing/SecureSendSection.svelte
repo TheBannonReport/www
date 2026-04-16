@@ -47,9 +47,10 @@
 			text: 'Pay per engagement and reveal — scale as you grow'
 		}
 	];
+	import LandingSection from './LandingSection.svelte';
 </script>
 
-<section id="securesend" class="relative overflow-hidden bg-surface-dark py-16 sm:py-32">
+<LandingSection id="securesend" variant="dark">
 	<div class="relative mx-auto max-w-7xl px-6">
 		<div class="flex flex-col items-center gap-16 lg:flex-row lg:gap-20">
 			<div class="w-full lg:w-1/2">
@@ -121,7 +122,7 @@
 			</div>
 		</div>
 	</div>
-</section>
+</LandingSection>
 
 <DemoModal
 	bind:open={ssOpen}

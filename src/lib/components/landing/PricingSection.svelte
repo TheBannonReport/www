@@ -8,9 +8,10 @@
 		'Team plans for 5 or 25 seats',
 		'SecureSend add-on available'
 	];
+	import LandingSection from './LandingSection.svelte';
 </script>
 
-<section id="pricing" class="relative overflow-hidden bg-surface-dark py-16 sm:py-32">
+<LandingSection id="pricing" variant="dark">
 	<div class="pointer-events-none absolute -right-20 -top-20 h-100 w-100 rounded-full bg-glow-1 blur-[100px]"></div>
 	<div class="relative mx-auto max-w-3xl px-6 text-center">
 		<h2 class="text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl">
@@ -49,4 +50,4 @@
 			</Button>
 		</div>
 	</div>
-</section>
+</LandingSection>
