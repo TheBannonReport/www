@@ -47,14 +47,6 @@
 				View Plans & Pricing
 				<ArrowRight class="ml-2 h-4 w-4" />
 			</Button>
-			<Button
-				href="https://app.thebannonreport.com/report"
-				variant="outline"
-				size="lg"
-				class="h-13 border-white/20 bg-transparent px-8 text-base font-semibold text-white hover:bg-white/10"
-			>
-				Report an Incident
-			</Button>
 		</div>
 	</div>
 </section>
