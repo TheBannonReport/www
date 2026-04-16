@@ -13,6 +13,7 @@
 		{ label: 'SecureSend', href: '/#securesend' },
 		{ label: 'How It Works', href: '/#how-it-works' },
 		{ label: 'Pricing', href: '/pricing' },
+		{ label: 'Report', href: '/report' },
 		{ label: 'Blog', href: '/blog' }
 	];
 
