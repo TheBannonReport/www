@@ -29,7 +29,7 @@
 		class="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-[0.1]"
 	/>
 
-	<div class="relative mx-auto w-full min-w-0 max-w-7xl px-6 py-16 sm:py-32">
+	<div class="relative mx-auto w-full min-w-0 max-w-7xl px-6 py-16 sm:py-32 sm:pt-48">
 		<div class="mx-auto max-w-4xl text-center h-screen sm:h-auto flex flex-col justify-center -mt-12">
 			<h1 class="text-4xl font-black leading-[1.08] tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl">
 				The Freight Industry's
