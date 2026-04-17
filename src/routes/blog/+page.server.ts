@@ -6,7 +6,7 @@ export const load: PageServerLoad = async ({ url }) => {
 	const posts = await getPosts(page);
 
 	return {
-		posts,
+		posts: Array.isArray(posts) ? posts : [...posts],
 		meta: (posts as any).meta?.pagination ?? { page, pages: 1 }
 	};
 };
