@@ -74,12 +74,14 @@
 
 	/* ── Feature comparison table ── */
 	const featureRows = [
-		{ feature: 'Unlimited lookups', carrier: true, broker: true, combo: true },
-		{ feature: 'Carrier vetting', carrier: true, broker: false, combo: true },
-		{ feature: 'Broker vetting', carrier: false, broker: true, combo: true },
-		{ feature: 'Insurance monitoring', carrier: true, broker: true, combo: true },
-		{ feature: 'Authority history', carrier: true, broker: true, combo: true },
-		{ feature: 'Combined carrier + broker reports', carrier: false, broker: false, combo: true }
+		{ feature: 'Unlimited lookups', carrier: true, broker: true, combo: true, team5: true, team25: true },
+		{ feature: 'Carrier vetting', carrier: true, broker: false, combo: true, team5: true, team25: true },
+		{ feature: 'Broker vetting', carrier: false, broker: true, combo: true, team5: true, team25: true },
+		{ feature: 'Insurance monitoring', carrier: true, broker: true, combo: true, team5: true, team25: true },
+		{ feature: 'Authority history', carrier: true, broker: true, combo: true, team5: true, team25: true },
+		{ feature: 'Combined carrier + broker reports', carrier: false, broker: false, combo: true, team5: true, team25: true },
+		{ feature: 'Team members', carrier: false, broker: false, combo: false, team5: true, team25: true },
+		{ feature: 'Shared organization', carrier: false, broker: false, combo: false, team5: true, team25: true }
 	];
 </script>
 
@@ -271,7 +273,7 @@
 
 	<!-- Feature Comparison Table -->
 	<div class="bg-surface-dark py-20">
-		<div class="mx-auto max-w-3xl px-6">
+		<div class="mx-auto max-w-5xl px-6">
 			<h2 class="text-center text-2xl font-bold tracking-tight text-white">Compare Plans</h2>
 			<p class="mt-2 text-center text-sm text-white/50">See exactly what's included in each plan.</p>
 
@@ -287,8 +289,10 @@
 									Combo
 									<Badge class="bg-white/20 px-1.5 py-0 text-[9px] text-white">Best</Badge>
 								</span>
-							</th>
-						</tr>
+						</th>
+						<th class="px-4 py-3 text-center font-medium text-white/50">Team 5</th>
+						<th class="px-4 py-3 text-center font-medium text-white/50">Team 25</th>
+					</tr>
 					</thead>
 					<tbody>
 						{#each featureRows as row (row.feature)}
@@ -314,16 +318,28 @@
 									{:else}
 										<X class="mx-auto h-4 w-4 text-white/20" />
 									{/if}
-								</td>
-							</tr>
+								</td>							<td class="px-4 py-3 text-center">
+								{#if row.team5}
+									<Check class="mx-auto h-4 w-4 text-accent-light" />
+								{:else}
+									<X class="mx-auto h-4 w-4 text-white/20" />
+								{/if}
+							</td>
+							<td class="px-4 py-3 text-center">
+								{#if row.team25}
+									<Check class="mx-auto h-4 w-4 text-accent-light" />
+								{:else}
+									<X class="mx-auto h-4 w-4 text-white/20" />
+								{/if}
+							</td>							</tr>
 						{/each}
 						<!-- Price row -->
 						<tr class="border-t border-white/10">
 							<td class="py-4 pr-4 font-medium text-white/80">Monthly price</td>
 							<td class="px-4 py-4 text-center font-semibold text-white">$80</td>
 							<td class="px-4 py-4 text-center font-semibold text-white">$80</td>
-							<td class="px-4 py-4 text-center font-semibold text-white">$125</td>
-						</tr>
+							<td class="px-4 py-4 text-center font-semibold text-white">$125</td>						<td class="px-4 py-4 text-center font-semibold text-white">$150</td>
+						<td class="px-4 py-4 text-center font-semibold text-white">$350</td>						</tr>
 					</tbody>
 				</table>
 			</div>
