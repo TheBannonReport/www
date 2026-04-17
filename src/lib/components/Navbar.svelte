@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import logo from '$lib/assets/logo.png';
-	import secureSendIcon from '$lib/assets/img/SecureSendIcon.svg';
+	import secureSendIcon from '$lib/assets/icons/SecureSendIcon.svg';
 	import { Menu, X } from '@lucide/svelte';
 	import { page } from '$app/state';
 

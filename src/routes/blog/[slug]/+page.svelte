@@ -74,13 +74,12 @@
 	<!-- Content -->
 	<section class="bg-background py-16 sm:py-24">
 		<div class="mx-auto max-w-3xl px-6">
-			{#if post.feature_image}
-				<img
-					src={post.feature_image}
-					alt={post.title}
-					class="-mt-12 mb-10 w-full rounded-xl shadow-lg"
-				/>
-			{/if}
+			<img
+				src={post.feature_image ?? '/delivery-truck-icon.svg'}
+				alt={post.title}
+				class="-mt-12 mb-10 w-full rounded-xl bg-muted object-cover shadow-lg"
+				onerror={(e) => { const el = e.currentTarget as HTMLImageElement; el.src = '/delivery-truck-icon.svg'; el.classList.add('object-contain', 'p-12'); }}
+			/>
 
 			<div class="prose prose-lg max-w-none prose-headings:tracking-tight prose-a:text-accent prose-a:underline hover:prose-a:text-foreground">
 				{@html post.html}

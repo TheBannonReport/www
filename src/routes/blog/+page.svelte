@@ -50,16 +50,12 @@
 							href="/blog/{post.slug}"
 							class="group flex flex-col overflow-hidden rounded-xl border border-border bg-card transition hover:shadow-lg"
 						>
-							{#if post.feature_image}
-								<img
-									src={post.feature_image}
-									alt={post.title}
-									class="h-48 w-full object-cover"
-								/>
-							{:else}
-								<div class="h-48 w-full bg-muted"></div>
-							{/if}
-
+							<img
+								src={post.feature_image ?? '/delivery-truck-icon.svg'}
+								alt={post.title}
+								class="h-48 w-full object-cover bg-muted"
+								onerror={(e) => { const el = e.currentTarget as HTMLImageElement; el.src = '/delivery-truck-icon.svg'; el.classList.add('object-contain', 'p-8'); }}
+							/>
 							<div class="flex flex-1 flex-col p-5">
 								<div class="mb-3 flex items-center gap-3 text-xs text-muted-foreground">
 								{#if post.published_at}

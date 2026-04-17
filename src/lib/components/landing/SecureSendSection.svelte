@@ -4,7 +4,7 @@
 	import DemoModal from '../DemoModal.svelte';
 	import BrowserMockup from '../BrowserMockup.svelte';
 	import { Shield, FileSearch, Lock, Activity, ArrowRight, EyeIcon } from '@lucide/svelte';
-	import secureSendIcon from '$lib/assets/img/SecureSendIcon.svg';
+	import secureSendIcon from '$lib/assets/icons/SecureSendIcon.svg';
 	import screenshot1 from '$lib/assets/img/Screenshot-1.png';
 	import screenshot2 from '$lib/assets/img/Screenshot-2.png';
 	import screenshot3 from '$lib/assets/img/Screenshot-3.png';
