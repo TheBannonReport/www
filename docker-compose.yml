@@ -1,0 +1,17 @@
+services:
+  ghost:
+    image: ghost:5-alpine
+    restart: always
+    ports:
+      - "2368:2368"
+    environment:
+      url: http://localhost:2368
+      database__client: sqlite3
+      database__connection__filename: /var/lib/ghost/content/data/ghost.db
+      # Run Ghost in "headless" content-API mode
+      # Admin panel is still available at /ghost for writing posts
+    volumes:
+      - ghost_data:/var/lib/ghost/content
+
+volumes:
+  ghost_data:
