@@ -1,23 +1,13 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
-	import { ArrowLeft, AlertTriangle, Upload, ShieldAlert } from '@lucide/svelte';
+	import { ArrowLeft, AlertTriangle, Upload, ShieldAlert, CheckCircle } from '@lucide/svelte';
+	import { enhance } from '$app/forms';
 
-	let firstName = $state('');
-	let lastName = $state('');
-	let email = $state('');
-	let yourMcDot = $state('');
-	let yourCompanyName = $state('');
-	let reportedMcDot = $state('');
-	let reportedPartyType = $state('');
-	let reportedPhone = $state('');
-	let reportedCompanyName = $state('');
-	let details = $state('');
-	let files: FileList | null = $state(null);
+	let { form } = $props();
+	let submitting = $state(false);
 
-	function handleSubmit(e: SubmitEvent) {
-		e.preventDefault();
-		// TODO: wire to backend
-	}
+	// Repopulate fields from server on validation error
+	const v = $derived(form?.values);
 </script>
 
 <div class="min-h-screen">
@@ -94,13 +84,28 @@
 				</div>
 
 				<!-- Form -->
+				{#if form?.success}
+				<div class="flex flex-col items-center justify-center rounded-2xl border border-border bg-card p-10 shadow-sm text-center">
+					<div class="flex h-14 w-14 items-center justify-center rounded-full bg-green-500/15">
+						<CheckCircle class="h-7 w-7 text-green-500" />
+					</div>
+					<h3 class="mt-5 text-xl font-semibold text-card-foreground">Report Submitted</h3>
+					<p class="mt-2 max-w-md text-sm text-muted-foreground">
+						Thank you for helping protect the freight industry. Our team will review your report and may reach out if we need additional information.
+					</p>
+					<a href="/" class="mt-6 inline-flex items-center gap-2 text-sm font-medium text-primary hover:underline">
+						<ArrowLeft class="h-4 w-4" />
+						Back to Home
+					</a>
+				</div>
+				{:else}
 				<div class="rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-8">
 					<h3 class="text-lg font-semibold text-card-foreground">Incident Report Form</h3>
 					<p class="mt-1 text-sm text-muted-foreground">
 						Fields marked with <span class="text-destructive">*</span> are required
 					</p>
 
-					<form onsubmit={handleSubmit} class="mt-8 space-y-5">
+					<form method="POST" use:enhance={() => { submitting = true; return async ({ update }) => { submitting = false; await update(); }; }} class="mt-8 space-y-5">
 						<!-- Name Row -->
 						<div class="grid gap-4 sm:grid-cols-2">
 							<div>
@@ -109,9 +114,10 @@
 								</label>
 								<input
 									id="firstName"
+									name="firstName"
 									type="text"
 									required
-									bind:value={firstName}
+									value={v?.firstName ?? ''}
 									class="mt-1.5 w-full rounded-lg border border-input bg-background px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/20"
 								/>
 							</div>
@@ -121,9 +127,10 @@
 								</label>
 								<input
 									id="lastName"
+									name="lastName"
 									type="text"
 									required
-									bind:value={lastName}
+									value={v?.lastName ?? ''}
 									class="mt-1.5 w-full rounded-lg border border-input bg-background px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/20"
 								/>
 							</div>
@@ -136,9 +143,10 @@
 							</label>
 							<input
 								id="email"
+								name="email"
 								type="email"
 								required
-								bind:value={email}
+								value={v?.email ?? ''}
 								class="mt-1.5 w-full rounded-lg border border-input bg-background px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/20"
 							/>
 						</div>
@@ -151,9 +159,10 @@
 								</label>
 								<input
 									id="yourMcDot"
+									name="reporterMcDot"
 									type="text"
 									required
-									bind:value={yourMcDot}
+									value={v?.reporterMcDot ?? ''}
 									class="mt-1.5 w-full rounded-lg border border-input bg-background px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/20"
 								/>
 							</div>
@@ -163,9 +172,10 @@
 								</label>
 								<input
 									id="yourCompany"
+									name="reporterCompanyName"
 									type="text"
 									required
-									bind:value={yourCompanyName}
+									value={v?.reporterCompanyName ?? ''}
 									class="mt-1.5 w-full rounded-lg border border-input bg-background px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/20"
 								/>
 							</div>
@@ -185,9 +195,10 @@
 							</label>
 							<input
 								id="reportedMcDot"
+								name="reportedMcDot"
 								type="text"
 								required
-								bind:value={reportedMcDot}
+								value={v?.reportedMcDot ?? ''}
 								class="mt-1.5 w-full rounded-lg border border-input bg-background px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/20"
 							/>
 						</div>
@@ -201,10 +212,10 @@
 								<label class="flex items-center gap-2 text-sm text-card-foreground cursor-pointer">
 									<input
 										type="radio"
-										name="partyType"
+										name="reportedPartyType"
 										value="carrier"
 										required
-										bind:group={reportedPartyType}
+										checked={v?.reportedPartyType === 'carrier'}
 										class="h-4 w-4 border-input text-primary focus:ring-ring/20"
 									/>
 									Carrier
@@ -212,9 +223,9 @@
 								<label class="flex items-center gap-2 text-sm text-card-foreground cursor-pointer">
 									<input
 										type="radio"
-										name="partyType"
+										name="reportedPartyType"
 										value="broker"
-										bind:group={reportedPartyType}
+										checked={v?.reportedPartyType === 'broker'}
 										class="h-4 w-4 border-input text-primary focus:ring-ring/20"
 									/>
 									Broker
@@ -230,8 +241,9 @@
 								</label>
 								<input
 									id="reportedPhone"
+									name="reportedPhone"
 									type="tel"
-									bind:value={reportedPhone}
+									value={v?.reportedPhone ?? ''}
 									class="mt-1.5 w-full rounded-lg border border-input bg-background px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/20"
 								/>
 							</div>
@@ -244,8 +256,9 @@
 								</label>
 								<input
 									id="reportedCompany"
+									name="reportedCompanyName"
 									type="text"
-									bind:value={reportedCompanyName}
+									value={v?.reportedCompanyName ?? ''}
 									class="mt-1.5 w-full rounded-lg border border-input bg-background px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/20"
 								/>
 							</div>
@@ -258,8 +271,9 @@
 							</label>
 							<textarea
 								id="details"
+								name="details"
 								rows="4"
-								bind:value={details}
+								value={v?.details ?? ''}
 								class="mt-1.5 w-full resize-y rounded-lg border border-input bg-background px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-ring focus:outline-none focus:ring-2 focus:ring-ring/20"
 							></textarea>
 						</div>
@@ -286,24 +300,26 @@
 									id="files"
 									type="file"
 									multiple
-									bind:files
 									class="sr-only"
 								/>
 							</div>
-							{#if files && files.length > 0}
-								<p class="mt-2 text-xs text-muted-foreground">
-									{files.length} file{files.length > 1 ? 's' : ''} selected
-								</p>
-							{/if}
 						</div>
+
+						<!-- Error -->
+						{#if form?.error}
+							<div class="rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+								{form.error}
+							</div>
+						{/if}
 
 						<!-- Submit -->
 						<Button
 							type="submit"
 							size="lg"
+							disabled={submitting}
 							class="mt-2 h-12 w-full bg-primary text-base font-semibold text-primary-foreground hover:bg-primary/90"
 						>
-							Submit Report
+							{submitting ? 'Submitting…' : 'Submit Report'}
 						</Button>
 
 						<p class="text-center text-xs text-muted-foreground">
@@ -314,6 +330,7 @@
 						</p>
 					</form>
 				</div>
+				{/if}
 			</div>
 		</div>
 	</section>
