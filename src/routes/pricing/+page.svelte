@@ -2,7 +2,9 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Separator } from '$lib/components/ui/separator';
-	import { Check, X, ArrowRight, ArrowLeft, Users, Shield, FileSearch, Zap } from '@lucide/svelte';
+	import { Check, X, ArrowLeft, ArrowRight } from '@lucide/svelte';
+	import { slide } from 'svelte/transition';
+	import SecureSendIcon from '$lib/components/icons/SecureSendIcon.svelte';
 
 	type Plan = {
 		name: string;
@@ -17,15 +19,37 @@
 	let isAnnual = $state(false);
 
 	/* ── Questionnaire state ── */
-	let vetCarriers = $state(false);
-	let vetBrokers = $state(false);
+	let vetChoice = $state<'carriers' | 'brokers' | 'both' | null>(null);
+
+	function selectVet(choice: 'carriers' | 'brokers' | 'both') {
+		const wasNull = vetChoice === null;
+		vetChoice = vetChoice === choice ? null : choice;
+
+		if (wasNull && vetChoice !== null) {
+			// Wait for the slide transition to complete, then scroll down to show cards
+			setTimeout(() => {
+				const el = document.getElementById('plan-cards');
+				if (el) {
+					const rect = el.getBoundingClientRect();
+					// Only scroll if the top of the cards is below the bottom third of the viewport
+					if (rect.top > window.innerHeight * 0.6) {
+						const target = window.scrollY + rect.top - window.innerHeight * 0.45;
+						window.scrollTo({ top: target, behavior: 'smooth' });
+					}
+				}
+			}, 320);
+		}
+	}
 
 	const recommendedPlan = $derived.by(() => {
-		if (vetCarriers && vetBrokers) return 'Combo Forensics';
-		if (vetCarriers) return 'Carrier Forensics';
-		if (vetBrokers) return 'Broker Forensics';
-		return 'Combo Forensics'; // default recommendation
+		if (vetChoice === 'both') return 'Combo Forensics';
+		if (vetChoice === 'carriers') return 'Carrier Forensics';
+		if (vetChoice === 'brokers') return 'Broker Forensics';
+		return null;
 	});
+
+	const recommendedPlanData = $derived(recommendedPlan ? plans.find((p) => p.name === recommendedPlan)! : null);
+	const recommendedTier = $derived(recommendedPlanData ? (isAnnual ? recommendedPlanData.annual : recommendedPlanData.monthly) : null);
 
 	/* ── Plan data ── */
 	const plans: Plan[] = [
@@ -114,165 +138,183 @@
 	<!-- Content -->
 	<div class="bg-background pt-16">
 
-	<!-- Recommendation Questionnaire -->
-	<div class="mx-auto max-w-3xl px-6">
-		<div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 rounded-xl border border-border bg-card px-6 py-4">
-			<p class="text-sm font-medium text-muted-foreground w-full sm:w-auto">I need to vet:</p>
-			<label class="flex cursor-pointer items-center gap-2 text-sm">
-				<input
-					type="checkbox"
-					bind:checked={vetCarriers}
-					class="h-4 w-4 rounded border-input text-accent focus:ring-ring/20"
-				/>
-				<span class="font-medium text-card-foreground">Carriers</span>
-			</label>
-			<label class="flex cursor-pointer items-center gap-2 text-sm">
-				<input
-					type="checkbox"
-					bind:checked={vetBrokers}
-					class="h-4 w-4 rounded border-input text-accent focus:ring-ring/20"
-				/>
-				<span class="font-medium text-card-foreground">Brokers</span>
-			</label>
-			<span class="hidden h-4 w-px bg-border sm:block"></span>
-			<p class="text-sm text-muted-foreground">
-				Recommended: <span class="font-semibold text-card-foreground">{recommendedPlan}</span>
-			</p>
+	<!-- Plan Finder -->
+	<div id="plans" class="mx-auto max-w-3xl scroll-mt-24 px-4 sm:px-6 {recommendedPlanData ? '' : 'mb-20'}">
+		<div class="flex flex-col items-center gap-5 rounded-2xl border border-border bg-card px-4 py-8 shadow-sm sm:gap-6 sm:px-6 sm:py-10">
+			<div class="flex flex-col items-center gap-1 text-center">
+				<h2 class="text-xl font-bold tracking-tight text-foreground sm:text-2xl">What do you need to vet?</h2>
+				<p class="text-sm text-muted-foreground">Pick one and we'll show you the right plan instantly.</p>
+			</div>
+			<div class="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:gap-3">
+				<button
+					type="button"
+					onclick={() => selectVet('carriers')}
+					class="rounded-lg px-7 py-3 text-sm font-semibold transition-all {vetChoice === 'carriers'
+						? 'bg-accent text-white shadow-md shadow-accent/25'
+						: 'border border-accent bg-card text-foreground hover:bg-accent/5 hover:shadow-sm'}"
+				>
+					Carriers
+				</button>
+				<button
+					type="button"
+					onclick={() => selectVet('brokers')}
+					class="rounded-lg px-7 py-3 text-sm font-semibold transition-all {vetChoice === 'brokers'
+						? 'bg-accent text-white shadow-md shadow-accent/25'
+						: 'border border-accent bg-card text-foreground hover:bg-accent/5 hover:shadow-sm'}"
+				>
+					Brokers
+				</button>
+				<button
+					type="button"
+					onclick={() => selectVet('both')}
+					class="rounded-lg px-7 py-3 text-sm font-semibold transition-all {vetChoice === 'both'
+						? 'bg-accent text-white shadow-md shadow-accent/25'
+						: 'border border-accent bg-card text-foreground hover:bg-accent/5 hover:shadow-sm'}"
+				>
+					Both
+				</button>
+			</div>
 		</div>
 	</div>
-
-	<!-- Billing Toggle -->
-	<div id="plans" class="mx-auto mt-12 flex items-center justify-center gap-3 scroll-mt-24">
-		<span class="text-sm font-medium {!isAnnual ? 'text-foreground' : 'text-muted-foreground'}">Monthly</span>
-		<button
-			type="button"
-			onclick={() => (isAnnual = !isAnnual)}
-			class="relative inline-flex h-7 w-12 shrink-0 cursor-pointer items-center rounded-full border border-border transition-colors {isAnnual ? 'bg-accent' : 'bg-muted'}"
-			role="switch"
-			aria-checked={isAnnual}
-			aria-label="Toggle annual billing"
-		>
-			<span
-				class="pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow-sm transition-transform {isAnnual ? 'translate-x-5.5' : 'translate-x-0.75'}"
-			></span>
-		</button>
-		<span class="text-sm font-medium {isAnnual ? 'text-foreground' : 'text-muted-foreground'}">
-			Annual
-			<span class="ml-1 text-xs font-semibold text-accent">Save 20%</span>
-		</span>
-	</div>
-
-	<!-- Core Plans -->
-	<div class="mx-auto mt-8 grid max-w-3xl gap-4 px-6 lg:grid-cols-3">
-		{#each plans as plan (plan.name)}
-			{@const tier = isAnnual ? plan.annual : plan.monthly}
-			{@const isRecommended = plan.name === recommendedPlan}
-			<div
-				class="relative flex flex-col rounded-xl border p-5 transition-all duration-300 {isRecommended
-					? 'border-accent bg-accent/5 shadow-lg shadow-accent/5 lg:scale-105'
-					: 'border-border bg-card hover:border-accent/30'}"
+	
+	<!-- Recommended Plan + Team Plans -->
+	{#if recommendedPlanData}
+	{@const tier = isAnnual ? recommendedPlanData.annual : recommendedPlanData.monthly}
+	<section in:slide={{ duration: 300 }}>
+		<!-- Billing toggle -->
+		<div class="flex items-center gap-3 mx-auto mt-10 justify-center">
+			<span class="text-sm font-medium {!isAnnual ? 'text-foreground' : 'text-muted-foreground'}">Monthly</span>
+			<button
+				type="button"
+				onclick={() => (isAnnual = !isAnnual)}
+				class="relative inline-flex h-7 w-12 shrink-0 cursor-pointer items-center rounded-full border border-border transition-colors {isAnnual ? 'bg-accent' : 'bg-accent/35'}"
+				role="switch"
+				aria-checked={isAnnual}
+				aria-label="Toggle annual billing"
 			>
-				{#if isRecommended}
+				<span
+					class="pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow-sm transition-transform {isAnnual ? 'translate-x-5.5' : 'translate-x-0.75'}"
+				></span>
+			</button>
+			<span class="text-sm font-medium {isAnnual ? 'text-foreground' : 'text-muted-foreground'}">
+				Annual
+				<span class="ml-1 text-xs font-semibold text-accent">Save 20%</span>
+			</span>
+		</div>
+			<div id="plan-cards" class="mx-auto mt-8 grid max-w-3xl gap-4 px-4 sm:px-6 lg:grid-cols-3">
+				<!-- Recommended card -->
+				<div class="relative flex flex-col rounded-xl border border-accent bg-accent/5 p-5 shadow-lg shadow-accent/5">
 					<Badge class="absolute -top-3 left-1/2 -translate-x-1/2 bg-accent px-3 py-0.5 text-xs text-white">
 						Recommended
 					</Badge>
-				{/if}
-				<h3 class="text-base font-semibold text-card-foreground">{plan.name}</h3>
-				<p class="mt-0.5 text-xs text-muted-foreground">{plan.description}</p>
-
-				<div class="mt-4 flex items-baseline gap-1">
-					<span class="text-3xl font-bold text-card-foreground">{tier.price}</span>
-					<span class="text-sm text-muted-foreground">/mo</span>
+					<h3 class="text-base font-semibold text-card-foreground">{recommendedPlanData.name}</h3>
+					<p class="mt-0.5 text-xs text-muted-foreground">{recommendedPlanData.description}</p>
+					<div class="mt-4 flex items-baseline gap-1">
+						<span class="text-3xl font-bold text-card-foreground">{tier.price}</span>
+						<span class="text-sm text-muted-foreground">/mo</span>
+					</div>
+					{#if isAnnual}
+						<p class="mt-0.5 text-xs text-muted-foreground">Billed annually</p>
+					{/if}
+					<Separator class="my-4" />
+					<ul class="flex-1 space-y-2">
+						{#each recommendedPlanData.features as feat (feat)}
+							<li class="flex items-center gap-2 text-xs text-muted-foreground">
+								<Check class="h-3.5 w-3.5 shrink-0 text-accent" />
+								{feat}
+							</li>
+						{/each}
+					</ul>
+					<Button
+						href={tier.href}
+						class="mt-5 w-full bg-accent text-white hover:bg-accent/90"
+					>
+						Get Started
+					</Button>
 				</div>
-				{#if isAnnual}
-					<p class="mt-0.5 text-xs text-muted-foreground">Billed annually</p>
-				{/if}
-
-				<Separator class="my-4" />
-
-				<ul class="flex-1 space-y-2">
-					{#each plan.features as feat (feat)}
-						<li class="flex items-center gap-2 text-xs text-muted-foreground">
-							<Check class="h-3.5 w-3.5 shrink-0 text-accent" />
-							{feat}
-						</li>
-					{/each}
+				<!-- Team plans -->
+				{#each teamPlans as plan (plan.name)}
+					{@const tier = isAnnual ? plan.annual : plan.monthly}
+					<div class="flex flex-col rounded-xl border border-border bg-card p-5 transition-all duration-300 hover:border-accent/30">
+						<div class="flex items-center gap-2">
+							<h3 class="text-base font-semibold text-card-foreground">{plan.name}</h3>
+							<Badge variant="outline" class="text-[10px] uppercase">{plan.seats}</Badge>
+						</div>
+						<p class="mt-0.5 text-xs text-muted-foreground">{plan.description}</p>
+						<div class="mt-4 flex items-baseline gap-1">
+							<span class="text-3xl font-bold text-card-foreground">{tier.price}</span>
+							<span class="text-sm text-muted-foreground">/mo</span>
+						</div>
+						{#if isAnnual}
+							<p class="mt-0.5 text-xs text-muted-foreground">Billed annually</p>
+						{/if}
+						<Separator class="my-4" />
+						<ul class="flex-1 space-y-2">
+							{#each plan.features as feat (feat)}
+								<li class="flex items-center gap-2 text-xs text-muted-foreground">
+									<Check class="h-3.5 w-3.5 shrink-0 text-accent" />
+									{feat}
+								</li>
+							{/each}
+						</ul>
+						<Button
+							href={tier.href}
+							class="mt-5 w-full bg-primary text-primary-foreground hover:bg-primary/90"
+						>
+							Get Started
+						</Button>
+					</div>
+				{/each}
+			</div>
+			<!-- SecureSend Add-on -->
+			<div class="mx-auto mt-6 flex max-w-3xl flex-col gap-4 rounded-2xl border border-dashed border-secure-send/30 bg-secure-send/5 px-5 py-5 sm:px-8">
+				<div class="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+					<div class="flex flex-wrap items-center gap-x-6 gap-y-2">
+						<div class="flex items-center gap-2 text-secure-send">						
+							<SecureSendIcon  />
+							<h3 class="text-lg font-semibold">SecureSend</h3>
+							<Badge class="border-secure-send/30 bg-secure-send/10 text-[10px] uppercase text-accent">Add-on</Badge>
+						</div>
+						<p class="text-sm text-muted-foreground">
+							Encrypted document exchange with identity verification
+						</p>
+					</div>
+					<div class="flex shrink-0 items-baseline gap-1">
+						<span class="text-2xl font-bold text-secure-send">+$99</span>
+						<span class="text-sm text-muted-foreground">/mo</span>
+					</div>
+				</div>
+				<ul class="grid gap-2 sm:grid-cols-2">
+					<li class="flex items-center gap-2 text-xs text-muted-foreground">
+						<Check class="h-3.5 w-3.5 shrink-0 text-secure-send" />
+						End-to-end encrypted document exchange
+					</li>
+					<li class="flex items-center gap-2 text-xs text-muted-foreground">
+						<Check class="h-3.5 w-3.5 shrink-0 text-secure-send" />
+						Identity verification before access
+					</li>
+					<li class="flex items-center gap-2 text-xs text-muted-foreground">
+						<Check class="h-3.5 w-3.5 shrink-0 text-secure-send" />
+						Automatic expiration &amp; audit trail
+					</li>
+					<li class="flex items-center gap-2 text-xs text-muted-foreground">
+						<Check class="h-3.5 w-3.5 shrink-0 text-secure-send" />
+						Works with any plan
+					</li>
 				</ul>
-
-				<Button
-					href={tier.href}
-					class="mt-5 w-full {isRecommended
-						? 'bg-accent text-white hover:bg-accent/90'
-						: 'bg-primary text-primary-foreground hover:bg-primary/90'}"
+				<a
+					href="/#securesend"
+					class="inline-flex items-center gap-1 text-xs font-medium text-secure-send transition-colors hover:text-secure-send/80"
 				>
-					Get Started
-				</Button>
+					Learn more
+					<ArrowRight class="h-3 w-3" />
+				</a>
 			</div>
-		{/each}
-	</div>
-
-	
-	<!-- Team Plans -->
-	<div class="mx-auto mt-4 flex max-w-3xl flex-col items-center gap-4 px-6 lg:flex-row lg:justify-center">
-		{#each teamPlans as plan (plan.name)}
-			{@const tier = isAnnual ? plan.annual : plan.monthly}
-			<div class="flex w-full flex-col rounded-xl border border-border bg-card p-5 transition-all duration-300 hover:border-accent/30 lg:w-[calc((100%-1rem)/3)]">
-				<div class="flex items-center gap-2">
-					<h3 class="text-base font-semibold text-card-foreground">{plan.name}</h3>
-					<Badge variant="outline" class="text-[10px] uppercase">{plan.seats}</Badge>
-				</div>
-				<p class="mt-0.5 text-xs text-muted-foreground">{plan.description}</p>
-
-				<div class="mt-4 flex items-baseline gap-1">
-					<span class="text-3xl font-bold text-card-foreground">{tier.price}</span>
-					<span class="text-sm text-muted-foreground">/mo</span>
-				</div>
-				{#if isAnnual}
-					<p class="mt-0.5 text-xs text-muted-foreground">Billed annually</p>
-				{/if}
-
-				<Separator class="my-4" />
-
-				<ul class="flex-1 space-y-2">
-					{#each plan.features as feat (feat)}
-						<li class="flex items-center gap-2 text-xs text-muted-foreground">
-							<Check class="h-3.5 w-3.5 shrink-0 text-accent" />
-							{feat}
-						</li>
-					{/each}
-				</ul>
-
-				<Button
-					href={tier.href}
-					class="mt-5 w-full bg-primary text-primary-foreground hover:bg-primary/90"
-				>
-					Get Started
-				</Button>
-			</div>
-		{/each}
-	</div>
-
-	<!-- SecureSend Add-on -->
-	<div class="mx-auto mt-6 mb-20 flex max-w-3xl items-center justify-between gap-6 rounded-2xl border border-dashed border-secure-send/30 bg-secure-send/5 px-8 py-5">
-		<div class="flex flex-wrap items-center gap-x-6 gap-y-2">
-			<div class="flex items-center gap-2">
-				<h3 class="text-lg font-semibold text-secure-send">SecureSend</h3>
-				<Badge class="border-secure-send/30 bg-secure-send/10 text-[10px] uppercase text-secure-send">Add-on</Badge>
-			</div>
-			<p class="text-sm text-muted-foreground">
-				Encrypted document exchange with identity verification
-			</p>
-		</div>
-		<div class="flex shrink-0 items-center gap-4">
-			<div class="flex items-baseline gap-1">
-				<span class="text-2xl font-bold text-secure-send">+$99</span>
-				<span class="text-sm text-muted-foreground">/mo</span>
-			</div>
-		</div>
-	</div>
+		</section>
+	{/if}
 
 	<!-- Feature Comparison Table -->
-	<div class="bg-surface-dark py-20">
+	<div class="bg-surface-dark py-20 mt-20">
 		<div class="mx-auto max-w-5xl px-6">
 			<h2 class="text-center text-2xl font-bold tracking-tight text-white">Compare Plans</h2>
 			<p class="mt-2 text-center text-sm text-white/50">See exactly what's included in each plan.</p>

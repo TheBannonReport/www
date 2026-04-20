@@ -48,6 +48,7 @@
 		}
 	];
 	import LandingSection from './LandingSection.svelte';
+	import SecureSendIcon from '../icons/SecureSendIcon.svelte';
 </script>
 
 <LandingSection id="securesend" variant="dark">
@@ -55,8 +56,8 @@
 		<div class="flex flex-col items-center gap-16 lg:flex-row lg:gap-20">
 			<div class="w-full lg:w-1/2">
 				<div class="flex items-center gap-3">
-					<div class="flex h-10 w-10 items-center justify-center rounded-xl bg-secure-send/15">
-						<img src={secureSendIcon} alt="" aria-hidden="true" class="h-6 w-6" />
+					<div class="flex h-10 w-10 items-center justify-center rounded-xl bg-secure-send/15 text-white">
+						<SecureSendIcon  />
 					</div>
 					<Badge class="border-secure-send/30 bg-secure-send/10 text-secure-send text-xs font-semibold">
 						Premium Add-on

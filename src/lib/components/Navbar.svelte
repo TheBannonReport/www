@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import logo from '$lib/assets/logo.png';
-	import secureSendIcon from '$lib/assets/icons/SecureSendIcon.svg';
 	import { Menu, X } from '@lucide/svelte';
 	import { page } from '$app/state';
+	import SecureSendIcon from './icons/SecureSendIcon.svelte';
 
 	let mobileMenuOpen = $state(false);
 	let activeSection = $state('');
@@ -152,10 +152,10 @@
 						href={link.href}
 						class="flex items-center gap-2 text-base font-medium transition-colors {isActive(link)
 							? 'text-secure-send-light underline decoration-secure-send underline-offset-4'
-							: 'text-secure-send/70 hover:text-secure-send-light'}"
+							: 'text-secure-send hover:text-secure-send-light'}"
 						onclick={(e) => handleNavClick(e, link)}
 					>
-						<img src={secureSendIcon} alt="" aria-hidden="true" class="h-4 w-4" />
+						<SecureSendIcon  />
 						{link.label}
 					</a>
 				{:else}
