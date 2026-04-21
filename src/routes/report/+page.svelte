@@ -1,10 +1,34 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
-	import { ArrowLeft, AlertTriangle, Upload, ShieldAlert, CheckCircle } from '@lucide/svelte';
+	import { ArrowLeft, AlertTriangle, Upload, ShieldAlert, CheckCircle, X } from '@lucide/svelte';
 	import { enhance } from '$app/forms';
 
 	let { form } = $props();
 	let submitting = $state(false);
+	let pendingFiles: File[] = $state([]);
+	let fileInput: HTMLInputElement | undefined = $state();
+
+	const MAX_FILES = 3;
+	const MAX_FILE_SIZE = 5 * 1024 * 1024;
+
+	function handleFileSelect(e: Event) {
+		const input = e.target as HTMLInputElement;
+		if (!input.files) return;
+		for (const file of Array.from(input.files)) {
+			if (pendingFiles.length >= MAX_FILES) break;
+			if (!pendingFiles.some((f) => f.name === file.name && f.size === file.size)) {
+				pendingFiles = [...pendingFiles, file];
+			}
+		}
+		input.value = '';
+	}
+
+	function removeFile(index: number) {
+		pendingFiles = pendingFiles.filter((_, i) => i !== index);
+	}
+
+	const hasOversized = $derived(pendingFiles.some((f) => f.size > MAX_FILE_SIZE));
+	const tooMany = $derived(pendingFiles.length > MAX_FILES);
 
 	// Repopulate fields from server on validation error
 	const v = $derived(form?.values);
@@ -105,7 +129,7 @@
 						Fields marked with <span class="text-destructive">*</span> are required
 					</p>
 
-					<form method="POST" use:enhance={() => { submitting = true; return async ({ update }) => { submitting = false; await update(); }; }} class="mt-8 space-y-5">
+					<form method="POST" enctype="multipart/form-data" use:enhance={({ formData }) => { for (const file of pendingFiles) { formData.append('files', file); } submitting = true; return async ({ update }) => { submitting = false; await update(); }; }} class="mt-8 space-y-5">
 						<!-- Name Row -->
 						<div class="grid gap-4 sm:grid-cols-2">
 							<div>
@@ -300,9 +324,35 @@
 									id="files"
 									type="file"
 									multiple
+									accept=".pdf,.jpg,.jpeg,.png,.webp,.txt,.doc,.docx"
+									bind:this={fileInput}
+									onchange={handleFileSelect}
 									class="sr-only"
 								/>
 							</div>
+							<p class="mt-1.5 text-xs text-muted-foreground">Max 3 files, 5 MB each. PDF, JPG, PNG, WEBP, TXT, DOC, or DOCX.</p>
+							{#if pendingFiles.length > 0}
+								<ul class="mt-2 space-y-1">
+									{#each pendingFiles as file, i}
+										<li class="flex items-center gap-1.5 text-xs text-muted-foreground">
+											<span class="truncate">📎 {file.name}</span>
+											<span class="shrink-0 text-muted-foreground/60">({(file.size / 1024 / 1024).toFixed(1)} MB)</span>
+											{#if file.size > MAX_FILE_SIZE}
+												<span class="shrink-0 text-destructive">too large</span>
+											{/if}
+											<button type="button" onclick={() => removeFile(i)} class="shrink-0 ml-auto rounded p-0.5 text-muted-foreground hover:text-destructive" aria-label="Remove {file.name}">
+												<X class="h-3.5 w-3.5" />
+											</button>
+										</li>
+									{/each}
+								</ul>
+								{#if tooMany}
+									<p class="mt-1 text-xs text-destructive">Too many files — max {MAX_FILES} allowed.</p>
+								{/if}
+								{#if hasOversized}
+									<p class="mt-1 text-xs text-destructive">One or more files exceed the 5 MB limit.</p>
+								{/if}
+							{/if}
 						</div>
 
 						<!-- Error -->
@@ -316,7 +366,7 @@
 						<Button
 							type="submit"
 							size="lg"
-							disabled={submitting}
+							disabled={submitting || tooMany || hasOversized}
 							class="mt-2 h-12 w-full bg-primary text-base font-semibold text-primary-foreground hover:bg-primary/90"
 						>
 							{submitting ? 'Submitting…' : 'Submit Report'}

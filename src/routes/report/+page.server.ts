@@ -38,10 +38,31 @@ export const actions: Actions = {
 
 		const apiUrl = env.API_URL || 'http://localhost:3000';
 
+		// Build multipart form to forward text fields + files to the API
+		const apiForm = new FormData();
+		for (const [key, value] of Object.entries(payload)) {
+			if (value !== undefined) apiForm.set(key, value);
+		}
+
+		const MAX_FILES = 3;
+		const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
+		const files = form.getAll('files');
+		let fileCount = 0;
+		for (const file of files) {
+			if (file instanceof File && file.size > 0) {
+				if (++fileCount > MAX_FILES) {
+					return fail(400, { error: `Maximum ${MAX_FILES} files allowed`, values: payload });
+				}
+				if (file.size > MAX_FILE_SIZE) {
+					return fail(400, { error: `${file.name} exceeds the 5 MB size limit`, values: payload });
+				}
+				apiForm.append('files', file);
+			}
+		}
+
 		const res = await fetch(`${apiUrl}/api/incidents`, {
 			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify(payload),
+			body: apiForm,
 		});
 
 		if (!res.ok) {
