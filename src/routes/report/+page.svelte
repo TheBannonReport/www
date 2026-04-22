@@ -8,7 +8,7 @@
 	type PendingFile = {
 		file: File;
 		status: FileStatus;
-		storageKey?: string;
+		uploadId?: number;
 		error?: string;
 	};
 
@@ -51,7 +51,7 @@
 				const err = await urlRes.json().catch(() => ({}));
 				throw new Error((err as { message?: string }).message || 'Failed to get upload URL');
 			}
-			const { uploadUrl, storageKey } = await urlRes.json();
+			const { uploadUrl, uploadId } = await urlRes.json();
 
 			const putRes = await fetch(uploadUrl, {
 				method: 'PUT',
@@ -61,7 +61,7 @@
 			if (!putRes.ok) throw new Error(`Upload failed (${putRes.status})`);
 
 			pendingFiles[index].status = 'done';
-			pendingFiles[index].storageKey = storageKey;
+			pendingFiles[index].uploadId = uploadId;
 		} catch (err: unknown) {
 			pendingFiles[index].status = 'error';
 			pendingFiles[index].error = err instanceof Error ? err.message : 'Upload failed';
@@ -74,10 +74,8 @@
 
 	const uploading = $derived(pendingFiles.some((f) => f.status === 'uploading'));
 	const hasErrors = $derived(pendingFiles.some((f) => f.status === 'error'));
-	const uploadedFiles = $derived(
-		pendingFiles
-			.filter((f) => f.status === 'done')
-			.map((f) => ({ storageKey: f.storageKey!, filename: f.file.name, contentType: f.file.type, sizeBytes: f.file.size })),
+	const uploadIds = $derived(
+		pendingFiles.filter((f) => f.status === 'done' && f.uploadId != null).map((f) => f.uploadId!),
 	);
 
 	// Repopulate fields from server on validation error
@@ -404,8 +402,8 @@
 									{/each}
 								</ul>
 							{/if}
-							<!-- Pass uploaded file metadata (storageKeys) to the form action -->
-							<input type="hidden" name="filesJson" value={JSON.stringify(uploadedFiles)} />
+							<!-- Pass upload IDs to the form action -->
+							<input type="hidden" name="uploadIdsJson" value={JSON.stringify(uploadIds)} />
 						</div>
 
 						<!-- Error -->

@@ -36,15 +36,15 @@ export const actions: Actions = {
 			}
 		}
 
-		// File metadata (storageKeys) already uploaded by the browser directly to S3
-		const filesJson = form.get('filesJson')?.toString();
-		const files = filesJson ? JSON.parse(filesJson) : undefined;
+		// Upload IDs for files already uploaded directly to S3
+		const uploadIdsJson = form.get('uploadIdsJson')?.toString();
+		const uploadIds: number[] = uploadIdsJson ? JSON.parse(uploadIdsJson) : [];
 
 		const apiUrl = env.API_URL || 'http://localhost:3000';
 		const res = await fetch(`${apiUrl}/api/incidents`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify({ ...payload, ...(files?.length ? { files } : {}) }),
+			body: JSON.stringify({ ...payload, ...(uploadIds.length ? { uploadIds } : {}) }),
 		});
 
 		if (!res.ok) {
