@@ -1,34 +1,84 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
-	import { ArrowLeft, AlertTriangle, Upload, ShieldAlert, CheckCircle, X } from '@lucide/svelte';
+	import { ArrowLeft, AlertTriangle, Upload, ShieldAlert, CheckCircle, X, Loader } from '@lucide/svelte';
 	import { enhance } from '$app/forms';
+
+	type FileStatus = 'uploading' | 'done' | 'error';
+
+	type PendingFile = {
+		file: File;
+		status: FileStatus;
+		storageKey?: string;
+		error?: string;
+	};
 
 	let { form } = $props();
 	let submitting = $state(false);
-	let pendingFiles: File[] = $state([]);
+	let pendingFiles: PendingFile[] = $state([]);
 	let fileInput: HTMLInputElement | undefined = $state();
 
 	const MAX_FILES = 3;
-	const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
-	function handleFileSelect(e: Event) {
+	async function handleFileSelect(e: Event) {
 		const input = e.target as HTMLInputElement;
 		if (!input.files) return;
-		for (const file of Array.from(input.files)) {
-			if (pendingFiles.length >= MAX_FILES) break;
-			if (!pendingFiles.some((f) => f.name === file.name && f.size === file.size)) {
-				pendingFiles = [...pendingFiles, file];
-			}
-		}
+		const incoming = Array.from(input.files).filter(
+			(f) => !pendingFiles.some((p) => p.file.name === f.name && p.file.size === f.size),
+		);
+		const toAdd = incoming.slice(0, MAX_FILES - pendingFiles.length);
 		input.value = '';
+		if (toAdd.length === 0) return;
+
+		const startIndex = pendingFiles.length;
+		pendingFiles = [...pendingFiles, ...toAdd.map((file) => ({ file, status: 'uploading' as FileStatus }))];
+
+		await Promise.all(toAdd.map((_, i) => uploadFile(startIndex + i)));
+	}
+
+	async function uploadFile(index: number) {
+		try {
+			const entry = pendingFiles[index];
+			const urlRes = await fetch('/upload-url', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					filename: entry.file.name,
+					contentType: entry.file.type,
+					sizeBytes: entry.file.size,
+				}),
+			});
+			if (!urlRes.ok) {
+				const err = await urlRes.json().catch(() => ({}));
+				throw new Error((err as { message?: string }).message || 'Failed to get upload URL');
+			}
+			const { uploadUrl, storageKey } = await urlRes.json();
+
+			const putRes = await fetch(uploadUrl, {
+				method: 'PUT',
+				body: entry.file,
+				headers: { 'Content-Type': entry.file.type },
+			});
+			if (!putRes.ok) throw new Error(`Upload failed (${putRes.status})`);
+
+			pendingFiles[index].status = 'done';
+			pendingFiles[index].storageKey = storageKey;
+		} catch (err: unknown) {
+			pendingFiles[index].status = 'error';
+			pendingFiles[index].error = err instanceof Error ? err.message : 'Upload failed';
+		}
 	}
 
 	function removeFile(index: number) {
 		pendingFiles = pendingFiles.filter((_, i) => i !== index);
 	}
 
-	const hasOversized = $derived(pendingFiles.some((f) => f.size > MAX_FILE_SIZE));
-	const tooMany = $derived(pendingFiles.length > MAX_FILES);
+	const uploading = $derived(pendingFiles.some((f) => f.status === 'uploading'));
+	const hasErrors = $derived(pendingFiles.some((f) => f.status === 'error'));
+	const uploadedFiles = $derived(
+		pendingFiles
+			.filter((f) => f.status === 'done')
+			.map((f) => ({ storageKey: f.storageKey!, filename: f.file.name, contentType: f.file.type, sizeBytes: f.file.size })),
+	);
 
 	// Repopulate fields from server on validation error
 	const v = $derived(form?.values);
@@ -129,7 +179,7 @@
 						Fields marked with <span class="text-destructive">*</span> are required
 					</p>
 
-					<form method="POST" enctype="multipart/form-data" use:enhance={({ formData }) => { for (const file of pendingFiles) { formData.append('files', file); } submitting = true; return async ({ update }) => { submitting = false; await update(); }; }} class="mt-8 space-y-5">
+					<form method="POST" use:enhance={() => { submitting = true; return async ({ update }) => { submitting = false; await update(); }; }} class="mt-8 space-y-5">
 						<!-- Name Row -->
 						<div class="grid gap-4 sm:grid-cols-2">
 							<div>
@@ -333,26 +383,29 @@
 							<p class="mt-1.5 text-xs text-muted-foreground">Max 3 files, 5 MB each. PDF, JPG, PNG, WEBP, TXT, DOC, or DOCX.</p>
 							{#if pendingFiles.length > 0}
 								<ul class="mt-2 space-y-1">
-									{#each pendingFiles as file, i}
-										<li class="flex items-center gap-1.5 text-xs text-muted-foreground">
-											<span class="truncate">📎 {file.name}</span>
-											<span class="shrink-0 text-muted-foreground/60">({(file.size / 1024 / 1024).toFixed(1)} MB)</span>
-											{#if file.size > MAX_FILE_SIZE}
-												<span class="shrink-0 text-destructive">too large</span>
+									{#each pendingFiles as entry, i}
+										<li class="flex items-center gap-1.5 text-xs">
+											{#if entry.status === 'uploading'}
+												<Loader class="h-3.5 w-3.5 shrink-0 animate-spin text-muted-foreground" />
+											{:else if entry.status === 'done'}
+												<CheckCircle class="h-3.5 w-3.5 shrink-0 text-green-500" />
+											{:else}
+												<X class="h-3.5 w-3.5 shrink-0 text-destructive" />
 											{/if}
-											<button type="button" onclick={() => removeFile(i)} class="shrink-0 ml-auto rounded p-0.5 text-muted-foreground hover:text-destructive" aria-label="Remove {file.name}">
+											<span class="truncate text-muted-foreground">{entry.file.name}</span>
+											<span class="shrink-0 text-muted-foreground/60">({(entry.file.size / 1024 / 1024).toFixed(1)} MB)</span>
+											{#if entry.error}
+												<span class="shrink-0 text-destructive">{entry.error}</span>
+											{/if}
+											<button type="button" onclick={() => removeFile(i)} class="shrink-0 ml-auto rounded p-0.5 text-muted-foreground hover:text-destructive" aria-label="Remove {entry.file.name}">
 												<X class="h-3.5 w-3.5" />
 											</button>
 										</li>
 									{/each}
 								</ul>
-								{#if tooMany}
-									<p class="mt-1 text-xs text-destructive">Too many files — max {MAX_FILES} allowed.</p>
-								{/if}
-								{#if hasOversized}
-									<p class="mt-1 text-xs text-destructive">One or more files exceed the 5 MB limit.</p>
-								{/if}
 							{/if}
+							<!-- Pass uploaded file metadata (storageKeys) to the form action -->
+							<input type="hidden" name="filesJson" value={JSON.stringify(uploadedFiles)} />
 						</div>
 
 						<!-- Error -->
@@ -366,10 +419,10 @@
 						<Button
 							type="submit"
 							size="lg"
-							disabled={submitting || tooMany || hasOversized}
+							disabled={submitting || uploading || hasErrors}
 							class="mt-2 h-12 w-full bg-primary text-base font-semibold text-primary-foreground hover:bg-primary/90"
 						>
-							{submitting ? 'Submitting…' : 'Submit Report'}
+							{#if submitting}Submitting…{:else if uploading}Uploading files…{:else}Submit Report{/if}
 						</Button>
 
 						<p class="text-center text-xs text-muted-foreground">
