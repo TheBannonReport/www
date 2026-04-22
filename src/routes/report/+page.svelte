@@ -19,19 +19,47 @@
 
 	const MAX_FILES = 3;
 
+	const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50 MB
+	const ALLOWED_TYPES = new Set([
+		'application/pdf',
+		'image/jpeg',
+		'image/png',
+		'application/zip',
+		'application/x-zip-compressed',
+		'application/msword',
+		'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+		'application/vnd.ms-excel',
+		'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+	]);
+
 	async function handleFileSelect(e: Event) {
 		const input = e.target as HTMLInputElement;
 		if (!input.files) return;
 		const incoming = Array.from(input.files).filter(
 			(f) => !pendingFiles.some((p) => p.file.name === f.name && p.file.size === f.size),
 		);
-		const toAdd = incoming.slice(0, MAX_FILES - pendingFiles.length);
+		const rejected = incoming.filter((f) => !ALLOWED_TYPES.has(f.type) || f.size > MAX_FILE_SIZE);
+		const accepted = incoming.filter((f) => ALLOWED_TYPES.has(f.type) && f.size <= MAX_FILE_SIZE);
 		input.value = '';
-		if (toAdd.length === 0) return;
 
-		const startIndex = pendingFiles.length;
-		pendingFiles = [...pendingFiles, ...toAdd.map((file) => ({ file, status: 'uploading' as FileStatus }))];
+		const currentValid = pendingFiles.filter((f) => f.status !== 'error').length;
+		const toAdd = accepted.slice(0, MAX_FILES - currentValid);
 
+		const rejectedEntries: PendingFile[] = rejected.map((f) => ({
+			file: f,
+			status: 'error',
+			error: !ALLOWED_TYPES.has(f.type) ? 'File type not allowed' : 'File exceeds 50 MB limit',
+		}));
+
+		if (toAdd.length === 0 && rejectedEntries.length === 0) return;
+
+		pendingFiles = [
+			...pendingFiles,
+			...rejectedEntries,
+			...toAdd.map((file) => ({ file, status: 'uploading' as FileStatus })),
+		];
+
+		const startIndex = pendingFiles.length - toAdd.length;
 		await Promise.all(toAdd.map((_, i) => uploadFile(startIndex + i)));
 	}
 
@@ -372,13 +400,13 @@
 									id="files"
 									type="file"
 									multiple
-									accept=".pdf,.jpg,.jpeg,.png,.webp,.txt,.doc,.docx"
+									accept=".pdf,.jpg,.jpeg,.png,.zip,.doc,.docx,.xls,.xlsx"
 									bind:this={fileInput}
 									onchange={handleFileSelect}
 									class="sr-only"
 								/>
 							</div>
-							<p class="mt-1.5 text-xs text-muted-foreground">Max 3 files, 5 MB each. PDF, JPG, PNG, WEBP, TXT, DOC, or DOCX.</p>
+							<p class="mt-1.5 text-xs text-muted-foreground">Max 3 files, 50 MB each. PDF, JPG, PNG, ZIP, DOC, DOCX, XLS, or XLSX.</p>
 							{#if pendingFiles.length > 0}
 								<ul class="mt-2 space-y-1">
 									{#each pendingFiles as entry, i}
