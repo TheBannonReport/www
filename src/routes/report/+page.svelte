@@ -7,6 +7,7 @@
 
 	type PendingFile = {
 		file: File;
+		contentType: string; // resolved from extension — browser's file.type is unreliable
 		status: FileStatus;
 		uploadId?: number;
 		error?: string;
@@ -18,19 +19,27 @@
 	let fileInput: HTMLInputElement | undefined = $state();
 
 	const MAX_FILES = 3;
-
 	const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50 MB
-	const ALLOWED_TYPES = new Set([
-		'application/pdf',
-		'image/jpeg',
-		'image/png',
-		'application/zip',
-		'application/x-zip-compressed',
-		'application/msword',
-		'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-		'application/vnd.ms-excel',
-		'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-	]);
+
+	// Map file extensions to canonical MIME types.
+	// Browsers derive file.type from the OS MIME registry, which is often wrong
+	// or empty (e.g. ZIP → application/octet-stream on many Windows setups).
+	const EXTENSION_MIME: Record<string, string> = {
+		pdf: 'application/pdf',
+		jpg: 'image/jpeg',
+		jpeg: 'image/jpeg',
+		png: 'image/png',
+		zip: 'application/zip',
+		doc: 'application/msword',
+		docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+		xls: 'application/vnd.ms-excel',
+		xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+	};
+
+	function resolveContentType(file: File): string | null {
+		const ext = file.name.split('.').pop()?.toLowerCase() ?? '';
+		return EXTENSION_MIME[ext] ?? null;
+	}
 
 	async function handleFileSelect(e: Event) {
 		const input = e.target as HTMLInputElement;
@@ -38,17 +47,20 @@
 		const incoming = Array.from(input.files).filter(
 			(f) => !pendingFiles.some((p) => p.file.name === f.name && p.file.size === f.size),
 		);
-		const rejected = incoming.filter((f) => !ALLOWED_TYPES.has(f.type) || f.size > MAX_FILE_SIZE);
-		const accepted = incoming.filter((f) => ALLOWED_TYPES.has(f.type) && f.size <= MAX_FILE_SIZE);
+
+		const resolved = incoming.map((f) => ({ file: f, contentType: resolveContentType(f) }));
+		const rejected = resolved.filter((r) => r.contentType === null || r.file.size > MAX_FILE_SIZE);
+		const accepted = resolved.filter((r) => r.contentType !== null && r.file.size <= MAX_FILE_SIZE);
 		input.value = '';
 
-		const currentValid = pendingFiles.filter((f) => f.status !== 'error').length;
-		const toAdd = accepted.slice(0, MAX_FILES - currentValid);
+		const slots = MAX_FILES - pendingFiles.filter((f) => f.status !== 'error').length;
+		const toAdd = accepted.slice(0, slots);
 
-		const rejectedEntries: PendingFile[] = rejected.map((f) => ({
-			file: f,
+		const rejectedEntries: PendingFile[] = rejected.map(({ file, contentType }) => ({
+			file,
+			contentType: contentType ?? '',
 			status: 'error',
-			error: !ALLOWED_TYPES.has(f.type) ? 'File type not allowed' : 'File exceeds 50 MB limit',
+			error: contentType === null ? 'File type not allowed' : 'File exceeds 50 MB limit',
 		}));
 
 		if (toAdd.length === 0 && rejectedEntries.length === 0) return;
@@ -56,8 +68,19 @@
 		pendingFiles = [
 			...pendingFiles,
 			...rejectedEntries,
-			...toAdd.map((file) => ({ file, status: 'uploading' as FileStatus })),
+			...toAdd.map(({ file, contentType }) => ({
+				file,
+				contentType: contentType!,
+				status: 'uploading' as FileStatus,
+			})),
 		];
+
+		// Auto-dismiss validation errors after 4 s so they don't linger
+		if (rejectedEntries.length) {
+			setTimeout(() => {
+				pendingFiles = pendingFiles.filter((f) => f.status !== 'error' || f.uploadId != null);
+			}, 4000);
+		}
 
 		const startIndex = pendingFiles.length - toAdd.length;
 		await Promise.all(toAdd.map((_, i) => uploadFile(startIndex + i)));
@@ -71,7 +94,7 @@
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					filename: entry.file.name,
-					contentType: entry.file.type,
+					contentType: entry.contentType,
 					sizeBytes: entry.file.size,
 				}),
 			});
@@ -84,7 +107,7 @@
 			const putRes = await fetch(uploadUrl, {
 				method: 'PUT',
 				body: entry.file,
-				headers: { 'Content-Type': entry.file.type },
+				headers: { 'Content-Type': entry.contentType },
 			});
 			if (!putRes.ok) throw new Error(`Upload failed (${putRes.status})`);
 
@@ -102,6 +125,7 @@
 
 	const uploading = $derived(pendingFiles.some((f) => f.status === 'uploading'));
 	const hasErrors = $derived(pendingFiles.some((f) => f.status === 'error'));
+	const atLimit = $derived(pendingFiles.filter((f) => f.status !== 'error').length >= MAX_FILES);
 	const uploadIds = $derived(
 		pendingFiles.filter((f) => f.status === 'done' && f.uploadId != null).map((f) => f.uploadId!),
 	);
@@ -384,22 +408,30 @@
 								Upload Documents to Support Your Case
 							</label>
 							<div
-								class="mt-1.5 flex items-center gap-3 rounded-lg border border-dashed border-input bg-background px-4 py-6"
+								class="mt-1.5 flex items-center gap-3 rounded-lg border border-dashed px-4 py-6 transition-colors {atLimit ? 'border-input/40 bg-muted/40 cursor-not-allowed' : 'border-input bg-background'}"
 							>
-								<Upload class="h-5 w-5 shrink-0 text-muted-foreground" />
+								<Upload class="h-5 w-5 shrink-0 {atLimit ? 'text-muted-foreground/40' : 'text-muted-foreground'}" />
 								<div class="flex-1 text-sm text-muted-foreground">
-									<label
-										for="files"
-										class="cursor-pointer font-medium text-foreground underline underline-offset-2 hover:text-primary"
-									>
-										Select Files
-									</label>
-									<span class="ml-1">or drag and drop</span>
+									{#if atLimit}
+										<span class="font-medium text-muted-foreground/60">Limit reached</span>
+									{:else}
+										<label
+											for="files"
+											class="cursor-pointer font-medium text-foreground underline underline-offset-2 hover:text-primary"
+										>
+											Select Files
+										</label>
+										<span class="ml-1">or drag and drop</span>
+									{/if}
 								</div>
+								{#if atLimit}
+									<span class="text-xs font-medium text-muted-foreground/60">3 / 3</span>
+								{/if}
 								<input
 									id="files"
 									type="file"
 									multiple
+									disabled={atLimit}
 									accept=".pdf,.jpg,.jpeg,.png,.zip,.doc,.docx,.xls,.xlsx"
 									bind:this={fileInput}
 									onchange={handleFileSelect}
@@ -410,7 +442,7 @@
 							{#if pendingFiles.length > 0}
 								<ul class="mt-2 space-y-1">
 									{#each pendingFiles as entry, i}
-										<li class="flex items-center gap-1.5 text-xs">
+										<li class="flex flex-wrap items-center gap-1.5 text-xs">
 											{#if entry.status === 'uploading'}
 												<Loader class="h-3.5 w-3.5 shrink-0 animate-spin text-muted-foreground" />
 											{:else if entry.status === 'done'}
@@ -421,7 +453,7 @@
 											<span class="truncate text-muted-foreground">{entry.file.name}</span>
 											<span class="shrink-0 text-muted-foreground/60">({(entry.file.size / 1024 / 1024).toFixed(1)} MB)</span>
 											{#if entry.error}
-												<span class="shrink-0 text-destructive">{entry.error}</span>
+											<span class="text-destructive wrap-break-word min-w-0">{entry.error}</span>
 											{/if}
 											<button type="button" onclick={() => removeFile(i)} class="shrink-0 ml-auto rounded p-0.5 text-muted-foreground hover:text-destructive" aria-label="Remove {entry.file.name}">
 												<X class="h-3.5 w-3.5" />
