@@ -5,11 +5,9 @@
 	import BrowserMockup from '../BrowserMockup.svelte';
 	import { Shield, FileSearch, Lock, Activity, ArrowRight, EyeIcon } from '@lucide/svelte';
 	import secureSendIcon from '$lib/assets/icons/SecureSendIcon.svg';
-	import screenshot1 from '$lib/assets/img/Screenshot-1.png';
-	import screenshot2 from '$lib/assets/img/Screenshot-2.png';
-	import screenshot3 from '$lib/assets/img/Screenshot-3.png';
-	import screenshot4 from '$lib/assets/img/Screenshot-4.png';
-	import screenshotSecureSend from '$lib/assets/img/Screenshot-securesend.png';
+	import SecureSendStep1Mock from './mocks/SecureSendStep1Mock.svelte';
+	import SecureSendStep2Mock from './mocks/SecureSendStep2Mock.svelte';
+	import SecureSendStep3Mock from './mocks/SecureSendStep3Mock.svelte';
 	import screenshotSecureSendMobile from '$lib/assets/img/Screenshot-securesend-mobile.png';
 	import type { Component } from 'svelte';
 
@@ -17,10 +15,9 @@
 	let ssSlide = $state(0);
 
 	const ssSlides = [
-		{ img: screenshot1, step: '01', title: 'Carrier Lookup', comment: 'Look up any carrier by DOT number in TBR, then launch a SecureSend engagement directly from the results.' },
-		{ img: screenshot2, step: '02', title: 'Send Secure Request', comment: 'A tracked, identity-gated request is sent to the carrier\'s principals — owners, drivers, or contacts — to submit their documents.' },
-		{ img: screenshot3, step: '03', title: 'KYC Verification', comment: 'The recipient must pass identity verification before the document is revealed. No more impersonation or document interception.' },
-		{ img: screenshot4, step: '04', title: 'Document Delivered', comment: 'Once verified, the document is unlocked and you get a full engagement history, email notifications, and audit trail.' }
+		{ component: SecureSendStep1Mock, step: '01', title: 'Launch and Send a Secure Request', comment: 'Look up a carrier in TBR, click SecureSend, drop in your W-9s, COIs, or contracts, add any metadata, and hit send. The recipient gets an email with a one-time access link — no new system to learn.' },
+		{ component: SecureSendStep2Mock, step: '02', title: 'Recipient Must Verify Identity', comment: 'The carrier\'s principal opens the link and is gated behind a camera-based KYC check. Documents stay locked until they prove they are who you sent it to.' },
+		{ component: SecureSendStep3Mock, step: '03', title: 'Full Audit Trail Back to You', comment: 'Once verified, you see who opened it, when, their face-match score, and download events — with a complete engagement history and the ability to revoke access anytime.' }
 	];
 
 	function openSsDemo(index = 0) { ssSlide = index; ssOpen = true; }

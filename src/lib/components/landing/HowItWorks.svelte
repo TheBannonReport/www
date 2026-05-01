@@ -2,10 +2,10 @@
 	import { Button } from '$lib/components/ui/button';
 	import SectionHeader from './SectionHeader.svelte';
 	import { Globe, BarChart3, AlertTriangle, CheckCircle, Eye, EyeIcon, ArrowRight } from '@lucide/svelte';
-	import screenshot1 from '$lib/assets/img/Screenshot-1.png';
-	import screenshot2 from '$lib/assets/img/Screenshot-2.png';
-	import screenshot3 from '$lib/assets/img/Screenshot-3.png';
-	import screenshot4 from '$lib/assets/img/Screenshot-4.png';
+	import HowItWorksStep1Mock from './mocks/HowItWorksStep1Mock.svelte';
+	import HowItWorksStep2Mock from './mocks/HowItWorksStep2Mock.svelte';
+	import HowItWorksStep3Mock from './mocks/HowItWorksStep3Mock.svelte';
+	import HowItWorksStep4Mock from './mocks/HowItWorksStep4Mock.svelte';
 	import DemoModal from '../DemoModal.svelte';
 
 	let demoOpen = $state(false);
@@ -15,34 +15,34 @@
 		{
 			number: '01',
 			icon: Globe,
-			title: 'Data Extraction',
-			description: 'We pull from 100+ data sources — FMCSA, Safer, Secretary of State, Department of Insurance — to build a complete entity profile.'
+			title: 'Search Any Carrier or Broker',
+			description: 'Paste an MC#, DOT, VIN — or just type a name. We pull from 100+ data sources (FMCSA, SAFER, Secretary of State, Department of Insurance) and build a complete profile in seconds.'
 		},
 		{
 			number: '02',
 			icon: BarChart3,
-			title: '20-Point Risk Assessment',
-			description: 'Every entity undergoes a proprietary 20-point evaluation to surface hidden liabilities and risk indicators.'
+			title: 'Get the Full Profile',
+			description: 'Authority history, insurance, inspections, contacts, associated entities — every data point we have, organized in one view.'
 		},
 		{
 			number: '03',
 			icon: AlertTriangle,
-			title: 'Fraud Database Cross-Check',
-			description: 'Profiles are matched against our ever-growing database of 100,000+ flagged scammers, stolen identities, and high-risk operators.'
+			title: '20-Point Risk + Fraud Cross-Check',
+			description: 'Each entity is scored across 20 risk dimensions and matched against 100,000+ flagged scammers, stolen identities, and chameleon carriers.'
 		},
 		{
 			number: '04',
 			icon: CheckCircle,
-			title: 'Score & Monitor',
-			description: 'Get a clear risk score — Safe, Review, Potential Risk, or Do Not Use — then monitor for changes with 2× daily alerts.'
+			title: 'Clear Verdict + 2× Daily Monitoring',
+			description: 'A single color-coded grade — Safe, Review, Potential Risk, or Do Not Use — plus continuous monitoring with alerts when status changes.'
 		}
 	];
 
 	const demoSlides = [
-		{ img: screenshot1, step: '01', title: 'Data Extraction', comment: 'Paste any MC# or DOT number into the search bar and get instant results — no forms, no waiting.' },
-		{ img: screenshot2, step: '02', title: '20-Point Risk Assessment', comment: 'Our 20-point risk scorecard surfaces hidden liabilities at a glance, so your team spends time on decisions, not digging.' },
-		{ img: screenshot3, step: '03', title: 'Advanced Fraud Detection', comment: 'Red flags are automatically cross-referenced against our fraud database and highlighted with plain-language explanations.' },
-		{ img: screenshot4, step: '04', title: 'Clear Results', comment: 'A single color-coded score tells you whether to proceed, proceed with caution, or walk away — in under 10 seconds.' }
+		{ component: HowItWorksStep1Mock, step: '01', title: 'Search Any Carrier or Broker', comment: 'Paste an MC#, DOT, VIN — or just type a name. Results come back in seconds, no forms, no waiting.' },
+		{ component: HowItWorksStep2Mock, step: '02', title: 'Get the Full Profile', comment: 'Authority, insurance, inspections, contacts, and associated entities — every data point we collected, organized in one view.' },
+		{ component: HowItWorksStep3Mock, step: '03', title: '20-Point Risk + Fraud Cross-Check', comment: 'Red flags are scored, cross-referenced against our fraud database, and explained in plain language so your team decides — not digs.' },
+		{ component: HowItWorksStep4Mock, step: '04', title: 'Clear Verdict + 2× Daily Monitoring', comment: 'A single color-coded grade tells you whether to proceed, proceed with caution, or walk away — and alerts you when anything changes.' }
 	];
 
 	function openDemo(index = 0) { demoSlide = index; demoOpen = true; }

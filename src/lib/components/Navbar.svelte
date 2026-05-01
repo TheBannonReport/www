@@ -111,12 +111,11 @@
 
 		<!-- Desktop CTA -->
 		<div class="hidden items-center gap-3 md:flex">
-			<!-- <Button variant="ghost" class="text-white/70 hover:text-white hover:bg-white/10">
-				Sign In
-			</Button> -->
-			<Button class="bg-white text-surface-dark hover:bg-white/90">
-				Get Started
-			</Button>
+			<a href="https://app.thebannonreport.com/pricing">
+				<Button class="bg-white text-surface-dark hover:bg-white/90">
+					Get Started
+				</Button>
+			</a>
 		</div>
 
 		<!-- Mobile Toggle -->
@@ -171,9 +170,11 @@
 				{/if}
 			{/each}
 			<div class="mt-4 flex flex-col gap-3 border-t border-white/10 pt-4">
-				<Button class="w-full justify-center bg-white text-surface-dark hover:bg-white/90">
-					Get Started
-				</Button>
+				<a href="https://app.thebannonreport.com/pricing" onclick={() => (mobileMenuOpen = false)}>
+					<Button class="w-full justify-center bg-white text-surface-dark hover:bg-white/90">
+						Get Started
+					</Button>
+				</a>
 			</div>
 		</div>
 	</div>
